@@ -6,8 +6,6 @@ import styles from "./Analytics.module.css"
 const Analytics = () => {
   return (
     <div className={styles.page}>
-      <h2>Analytics</h2>
-
       <div className={styles.statsGrid}>
         <StatCard
           title="Conversion Rate"

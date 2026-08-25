@@ -65,11 +65,11 @@ const Orders = () => {
 	}
 	return (
 		<div className={styles.page}>
-			<h2 className={styles.title}>Orders</h2>
 			<div className={styles.toolbar}>
 				<input className={styles.input}
 					value={search}
 					onChange={e => setSearch(e.target.value)}
+					placeholder="Search customers..."
 				/>
 				<select className={styles.select}
 					value={selected}
@@ -99,7 +99,7 @@ const Orders = () => {
 								<td>#{order.id}</td>
 								<td>{order.customer}</td>
 								<td>{order.date}</td>
-								<td>{order.amount} ₽</td>
+								<td>{order.amount.toLocaleString("ru-RU")} ₽</td>
 								<td><span className={`${styles.status} ${getStatusClass(order.status)}`}>{order.status}</span></td>
 							</tr>
 						))}

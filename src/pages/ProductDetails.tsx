@@ -18,7 +18,7 @@ const ProductDetails = () => {
 			<div className={styles.card}>
 				<div className={styles.row}>
 					<span className={styles.label}>Price</span>
-					<span className={styles.value}>{findProduct.price}</span>
+					<span className={styles.value}>{findProduct.price.toLocaleString("ru-RU")} ₽</span>
 				</div>
 
 				<div className={styles.row}>

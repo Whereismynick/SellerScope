@@ -52,7 +52,7 @@ const RecentOrders = () => {
 						<tr key={order.id}>
 							<td>#{order.id}</td>
 							<td>{order.customer}</td>
-							<td>{order.amount}</td>
+							<td>{order.amount.toLocaleString("ru-RU")} ₽</td>
 							<td>
 								<span className={`${styles.status} ${order.status === "Paid" ? styles.paid
 										: order.status === "Pending" ? styles.pending

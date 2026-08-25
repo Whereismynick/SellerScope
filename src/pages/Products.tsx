@@ -13,21 +13,23 @@ const Products = () => {
 		return styles.outOfStock
 	}
 	return (
-		<div>
-			<h2>Products</h2>
-			<input className={styles.search}
-				value={search}
-				onChange={e => setSearch(e.target.value)}
-			/>
-			<select className={styles.select}
-				value={selected}
-				onChange={e => setSelected(e.target.value)}>
-				<option value="All">All</option>
-				<option value="Active">Active</option>
-				<option value="Low Stock">Low Stock</option>
-				<option value="Out of Stock">Out of Stock</option>
+		<div className={styles.page}>
+			<div className={styles.toolbar}>
+				<input className={styles.input}
+					value={search}
+					onChange={e => setSearch(e.target.value)}
+					placeholder="Search products..."
+				/>
+				<select className={styles.select}
+					value={selected}
+					onChange={e => setSelected(e.target.value)}>
+					<option value="All">All</option>
+					<option value="Active">Active</option>
+					<option value="Low Stock">Low Stock</option>
+					<option value="Out of Stock">Out of Stock</option>
 
-			</select>
+				</select>
+			</div>
 			<div className={styles.tableCard}>
 				<table className={styles.table}>
 					<thead>
@@ -42,7 +44,7 @@ const Products = () => {
 						{filteredProducts.map(product => (
 							<tr key={product.id}>
 								<td><Link to={`/products/${product.id}`}>{product.name}</Link></td>
-								<td>{product.price}</td>
+								<td>{product.price.toLocaleString("ru-RU")} ₽</td>
 								<td>{product.stock}</td>
 								<td><span className={`${styles.status} ${getStatusClass(product.status)}`}>{product.status}</span></td>
 							</tr>

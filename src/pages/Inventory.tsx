@@ -24,11 +24,11 @@ const Inventory = () => {
 	const filteredInventory = inventory.filter(item => item.name.toLowerCase().includes(search.toLowerCase()) && (!onlyLowStock || (item.stock - item.reserved < 10)))
 	return (
 		<div>
-			<h2 className={styles.title}>Inventory</h2>
 			<div className={styles.toolbar}>
 				<input className={styles.search}
 					value={search}
 					onChange={e => setSearch(e.target.value)}
+					placeholder="Search products or SKU..."
 				/>
 				<label className={styles.checkboxLabel}>
 					<input

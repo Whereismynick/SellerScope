@@ -29,7 +29,7 @@ const TopProducts = ({ products }: TopProductsProps) => {
 						<tr key={prod.product}>
 							<td>{prod.product}</td>
 							<td>{prod.sales}</td>
-							<td>{prod.revenue}</td>
+							<td>{prod.revenue.toLocaleString("ru-RU")} ₽</td>
 						</tr>
 					))}
 				</tbody>
