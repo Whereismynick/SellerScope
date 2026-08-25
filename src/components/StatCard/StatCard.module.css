@@ -1,0 +1,33 @@
+.statcard {
+	background: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 12px;
+	padding: 20px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+	margin: 0 0 8px;
+	font-size: 15px;
+	color: #64748b;
+}
+
+.value {
+	margin: 0 0 8px;
+	font-size: 24px;
+	font-weight: 700;
+	color: #0f172a;
+}
+
+.change {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.positive {
+  color: #16a34a;
+}
+
+.negative {
+  color: #dc2626;
+}

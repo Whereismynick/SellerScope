@@ -1,0 +1,62 @@
+.page {
+	max-width: 700px;
+}
+
+.backLink {
+	text-decoration: none;
+	color: #6366f1;
+}
+
+.title {
+	font-size: 24px;
+	margin: 16px 0;
+}
+
+.card {
+	background: white;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 20px;
+}
+
+.row {
+	display: flex;
+	justify-content: space-between;
+	padding: 12px 0;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+	color: grey;
+}
+
+.value {
+	font-weight: 700;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.active {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.lowStock {
+  color: #a16207;
+  background: #fef3c7;
+}
+
+.outOfStock {
+  color: #b91c1c;
+  background: #fee2e2;
+}

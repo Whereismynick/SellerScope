@@ -1,0 +1,22 @@
+.status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.active {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.lowStock {
+  color: #a16207;
+  background: #fef3c7;
+}
+
+.outOfStock {
+  color: #b91c1c;
+  background: #fee2e2;
+}
