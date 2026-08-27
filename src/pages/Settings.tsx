@@ -1,84 +1,62 @@
 import { useState } from "react"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import styles from "./Settings.module.css"
 
-type SettingsForm = {
-	storeName: string
-	email: string
-	currency: string
-	notifications: boolean
-}
+const settingsSchema = z.object({
+	storeName: z.string().trim().min(1, "Store name is required"),
+	email: z.email("Enter a valid email"),
+	currency: z.enum(["RUB", "USD", "EUR"]),
+	notifications: z.boolean()
+})
 
-type SettingsErrors = {
-	storeName?: string
-	email?: string
-}
+type SettingsForm = z.infer<typeof settingsSchema>
 
 const Settings = () => {
-	const [form, setForm] = useState<SettingsForm>({
-		storeName: "SellerScope Store",
-		email: "seller@example.com",
-		currency: "RUB",
-		notifications: true
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState: { errors, isDirty }
+	} = useForm<SettingsForm>({
+		resolver: zodResolver(settingsSchema),
+		defaultValues: {
+			storeName: "SellerScope Store",
+			email: "seller@example.com",
+			currency: "RUB",
+			notifications: true
+		}
 	})
-	const [errors, setErrors] = useState<SettingsErrors>({})
 	const [saved, setSaved] = useState(false)
-	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		const newErrors: SettingsErrors = {}
-		if (!form.storeName.trim()) {
-			newErrors.storeName = "Store name is required"
-		}
 
-		if (!form.email.trim()) {
-			newErrors.email = "Email is required"
-		} else if (!form.email.includes('@')) {
-			newErrors.email = "Enter a valid email"
-		}
-		setErrors(newErrors)
-		if (Object.keys(newErrors).length > 0) {
-			setSaved(false)
-			return
-		}
+	const onSubmit = (data: SettingsForm) => {
+		console.log(data)
 		setSaved(true)
+		reset(data)
 	}
 	return (
 		<div className={styles.page}>
-			<form className={styles.form} onSubmit={handleSubmit}>
+			<form className={styles.form} 
+			onSubmit={handleSubmit(onSubmit)}
+			noValidate
+			>
 				<label className={styles.field}>Store name
 					<input className={styles.input}
-						value={form.storeName}
-						onChange={e => {
-							setForm({
-								...form,
-								storeName: e.target.value
-							})
-							setSaved(false)
-						}}
+						{...register("storeName")}
 					/>
-					{errors.storeName && (<span className={styles.error}>{errors.storeName}</span>)}
+					{errors.storeName && (<span className={styles.error}>{errors.storeName.message}</span>)}
 				</label>
 				<label className={styles.field}>Email
 					<input className={styles.input}
-						value={form.email}
-						onChange={e => {
-							setForm({
-								...form,
-								email: e.target.value
-							})
-							setSaved(false)
-						}}
+					type="email"
+					{...register("email")}
 					/>
-					{errors.email && (<span className={styles.error}>{errors.email}</span>)}
+					{errors.email && (<span className={styles.error}>{errors.email.message}</span>)}
 				</label>
 				<label className={styles.field}>Currency
 					<select className={styles.select}
-						value={form.currency}
-						onChange={e => {setForm({
-							...form,
-							currency: e.target.value
-						})
-						setSaved(false)
-					}}
+					{...register("currency")}
 					>
 						<option value="RUB">RUB</option>
 						<option value="USD">USD</option>
@@ -88,18 +66,11 @@ const Settings = () => {
 				<label className={styles.checkboxField}>Notifications
 					<input
 						type="checkbox"
-						checked={form.notifications}
-						onChange={e => {
-							setForm({
-								...form,
-								notifications: e.target.checked
-							})
-							setSaved(false)
-						}}
+						{...register("notifications")}
 					/>
 				</label>
 				<button className={styles.button} type="submit">Save changes</button>
-				{saved && (<span className={styles.success}>Settings saved successfully</span>)}
+				{saved && !isDirty && (<span className={styles.success}>Settings saved successfully</span>)}
 			</form>
 
 		</div>
