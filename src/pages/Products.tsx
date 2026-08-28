@@ -1,17 +1,39 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from './Products.module.css'
-import { products, type ProductStatus } from "../data/products"
+import { type Product, type ProductStatus } from "../data/products"
 import { Link } from "react-router-dom"
 const Products = () => {
-
+	const [items, setItems] = useState<Product[]>([])
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState("All")
-	const filteredProducts = products.filter(product => product.name.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || product.status === selected))
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
+	const filteredProducts = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || item.status === selected))
 	const getStatusClass = (status: ProductStatus) => {
 		if (status === 'Active') return styles.active
 		if (status === 'Low Stock') return styles.lowStock
 		return styles.outOfStock
 	}
+
+	const fetchItems = async () => {
+		try {
+			setLoading(true)
+			setError(null)
+			const response = await fetch(`http://localhost:3001/api/products`)
+			if (!response.ok) throw new Error(`Failed to load products`)
+			const data = await response.json()
+			setItems(data)
+		} catch (e) {
+			setError(e instanceof Error ? e.message : `Unknown error`)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	useEffect(() => {
+		fetchItems()
+	}, [])
+
 	return (
 		<div className={styles.page}>
 			<div className={styles.toolbar}>
@@ -31,27 +53,36 @@ const Products = () => {
 				</select>
 			</div>
 			<div className={styles.tableCard}>
-				<table className={styles.table}>
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Price</th>
-							<th>Stock</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						{filteredProducts.map(product => (
-							<tr key={product.id}>
-								<td><Link to={`/products/${product.id}`}>{product.name}</Link></td>
-								<td>{product.price.toLocaleString("ru-RU")} ₽</td>
-								<td>{product.stock}</td>
-								<td><span className={`${styles.status} ${getStatusClass(product.status)}`}>{product.status}</span></td>
+				{loading ? (<p>Loading products...</p>) : error ? (
+					<div>
+						<p>{error}</p>
+						<button onClick={fetchItems}>Retry</button>
+					</div>
+				) : filteredProducts.length === 0 ? (
+					<p>No products found</p>
+				) : (
+					<table className={styles.table}>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Price</th>
+								<th>Stock</th>
+								<th>Status</th>
 							</tr>
-						))}
+						</thead>
+						<tbody>
+							{filteredProducts.map(product => (
+								<tr key={product.id}>
+									<td><Link to={`/products/${product.id}`}>{product.name}</Link></td>
+									<td>{product.price.toLocaleString("ru-RU")} ₽</td>
+									<td>{product.stock}</td>
+									<td><span className={`${styles.status} ${getStatusClass(product.status)}`}>{product.status}</span></td>
+								</tr>
+							))}
 
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				)}
 			</div>
 		</div>
 	)
