@@ -1,38 +1,39 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import styles from './Products.module.css'
-import { type Product, type ProductStatus } from "../data/products"
+import { type Product, type ProductStatus } from "../types/product"
 import { Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+
+const fetchProducts = async (): Promise<Product[]> => {
+		const response = await fetch(`http://localhost:3001/api/products`)
+		if (!response.ok) throw new Error(`Failed to load products`)
+		const data = await response.json()
+		return data
+	}
+
 const Products = () => {
-	const [items, setItems] = useState<Product[]>([])
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState("All")
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
-	const filteredProducts = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || item.status === selected))
+
 	const getStatusClass = (status: ProductStatus) => {
 		if (status === 'Active') return styles.active
 		if (status === 'Low Stock') return styles.lowStock
 		return styles.outOfStock
 	}
 
-	const fetchItems = async () => {
-		try {
-			setLoading(true)
-			setError(null)
-			const response = await fetch(`http://localhost:3001/api/products`)
-			if (!response.ok) throw new Error(`Failed to load products`)
-			const data = await response.json()
-			setItems(data)
-		} catch (e) {
-			setError(e instanceof Error ? e.message : `Unknown error`)
-		} finally {
-			setLoading(false)
-		}
-	}
+	const {
+		data: items = [],
+		isLoading,
+		error,
+		refetch
+	} = useQuery({
+		queryKey: ["products"],
+		queryFn: fetchProducts
+	})
 
-	useEffect(() => {
-		fetchItems()
-	}, [])
+	const filteredProducts = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || item.status === selected))
+
+	
 
 	return (
 		<div className={styles.page}>
@@ -53,10 +54,10 @@ const Products = () => {
 				</select>
 			</div>
 			<div className={styles.tableCard}>
-				{loading ? (<p>Loading products...</p>) : error ? (
+				{isLoading ? (<p>Loading products...</p>) : error ? (
 					<div>
-						<p>{error}</p>
-						<button onClick={fetchItems}>Retry</button>
+						<p>{error.message}</p>
+						<button onClick={() => refetch()}>Retry</button>
 					</div>
 				) : filteredProducts.length === 0 ? (
 					<p>No products found</p>

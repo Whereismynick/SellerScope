@@ -1,0 +1,9 @@
+export type Product = {
+  id: number
+  name: string
+  price: number
+  stock: number
+  status: ProductStatus
+}
+
+export type ProductStatus = "Active" | "Low Stock" | "Out of Stock"
