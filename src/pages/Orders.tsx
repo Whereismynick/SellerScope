@@ -1,68 +1,50 @@
 import { useState } from "react"
 import styles from "./Orders.module.css"
+import { useQuery } from "@tanstack/react-query"
+import type { Order, OrderStatus } from "../types/order"
 
-type OrderStatus = "Paid" | "Pending" | "Cancelled"
-type Order = {
-	id: number
-	customer: string
-	date: string
-	amount: number
-	status: OrderStatus
+const fetchOrders = async (): Promise<Order[]> => {
+	const response = await fetch(`http://localhost:3001/api/orders`)
+	if (!response.ok) throw new Error(`Failed to load orders`)
+	const data = await response.json()
+	return data
 }
-const orders: Order[] = [
-	{
-		id: 1001,
-		customer: "Anna Petrova",
-		date: "2026-08-18",
-		amount: 12900,
-		status: "Paid"
-	},
-	{
-		id: 1002,
-		customer: "Max Orlov",
-		date: "2026-08-18",
-		amount: 8400,
-		status: "Pending"
-	},
-	{
-		id: 1003,
-		customer: "Dmitry Ivanov",
-		date: "2026-08-17",
-		amount: 21900,
-		status: "Paid"
-	},
-	{
-		id: 1004,
-		customer: "Olga Smirnova",
-		date: "2026-08-17",
-		amount: 5600,
-		status: "Cancelled"
-	},
-	{
-		id: 1005,
-		customer: "Alex Morozov",
-		date: "2026-08-16",
-		amount: 17400,
-		status: "Paid"
-	},
-	{
-		id: 1006,
-		customer: "Maria Volkova",
-		date: "2026-08-16",
-		amount: 9200,
-		status: "Pending"
-	}
-]
 
 const Orders = () => {
 	const [search, setSearch] = useState('')
 	const [selected, setSelected] = useState("All")
-	const searchOrders = orders.filter(order => order.customer.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || order.status === selected))
+
 	const getStatusClass = (status: OrderStatus) => {
-		if(status === 'Paid') return styles.paid
-		if(status === 'Pending') return styles.pending
+		if (status === 'Paid') return styles.paid
+		if (status === 'Pending') return styles.pending
 		return styles.cancelled
 	}
+
+	const {
+		data: items = [],
+		isLoading,
+		error,
+		refetch
+	} = useQuery({
+		queryKey: ["orders"],
+		queryFn: fetchOrders
+	})
+
+	if (isLoading) {
+		return <p>Loading orders...</p>
+	}
+
+	if (error) {
+		return (
+			<div>
+				<p>{error.message}</p>
+				<button onClick={() => refetch()}>Retry</button>
+			</div>
+		)
+	}
+
+	const searchOrders = items.filter(item => item.customer.toLowerCase().includes(search.toLowerCase()) && (selected === "All" || item.status === selected))
+
 	return (
 		<div className={styles.page}>
 			<div className={styles.toolbar}>
@@ -83,28 +65,32 @@ const Orders = () => {
 			</div>
 
 			<div className={styles.tableCard}>
-				<table className={styles.table}>
-					<thead>
-						<tr>
-							<th>Order</th>
-							<th>Customer</th>
-							<th>Date</th>
-							<th>Amount</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						{searchOrders.map(order => (
-							<tr key={order.id}>
-								<td>#{order.id}</td>
-								<td>{order.customer}</td>
-								<td>{order.date}</td>
-								<td>{order.amount.toLocaleString("ru-RU")} ₽</td>
-								<td><span className={`${styles.status} ${getStatusClass(order.status)}`}>{order.status}</span></td>
+				{searchOrders.length === 0 ? (
+					<p>No orders found</p>
+				) : (
+					<table className={styles.table}>
+						<thead>
+							<tr>
+								<th>Order</th>
+								<th>Customer</th>
+								<th>Date</th>
+								<th>Amount</th>
+								<th>Status</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{searchOrders.map(item => (
+								<tr key={item.id}>
+									<td>#{item.id}</td>
+									<td>{item.customer}</td>
+									<td>{item.date}</td>
+									<td>{item.amount.toLocaleString("ru-RU")} ₽</td>
+									<td><span className={`${styles.status} ${getStatusClass(item.status)}`}>{item.status}</span></td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				)}
 			</div>
 		</div>
 	)
