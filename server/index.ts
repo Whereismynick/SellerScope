@@ -94,6 +94,17 @@ app.get("/api/inventory", (req, res) => {
 	res.json(inventory)
 })
 
+app.post("/api/products", (req, res) => {
+	const newProduct = req.body
+	const id = products.length + 1
+	const product = {
+		id,
+		...newProduct
+	}
+	products.push(product)
+	return res.status(201).json(product)
+})
+
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`)
 })

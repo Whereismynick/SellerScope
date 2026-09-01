@@ -7,3 +7,5 @@ export type Product = {
 }
 
 export type ProductStatus = "Active" | "Low Stock" | "Out of Stock"
+
+export type NewProduct = Omit<Product, "id">
