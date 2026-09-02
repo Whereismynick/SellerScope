@@ -1,17 +1,13 @@
+import mongoose from "mongoose"
+import dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
+import { ProductModel } from "./models/Product"
 
 const app = express()
 const PORT = 3001
-
-const products = [
-	{ id: 1, name: "iPhone 15 Pro", price: 119900, stock: 24, status: "Active" },
-	{ id: 2, name: "MacBook Air M3", price: 149900, stock: 8, status: "Low Stock" },
-	{ id: 3, name: "AirPods Pro", price: 24900, stock: 41, status: "Active" },
-	{ id: 4, name: "Apple Watch Series 9", price: 42900, stock: 0, status: "Out of Stock" },
-	{ id: 5, name: "USB-C Hub", price: 7900, stock: 14, status: "Active" },
-	{ id: 6, name: "MacBook Stand", price: 12500, stock: 5, status: "Low Stock" }
-]
+dotenv.config()
+const MONGODB_URI = process.env.MONGODB_URI
 
 const orders = [
 	{
@@ -70,15 +66,13 @@ const inventory = [
 app.use(cors())
 app.use(express.json())
 
-app.get("/api/products", (req, res) => {
-	res.json(products)
+app.get("/api/products", async (req, res) => {
+	const productsFromDb = await ProductModel.find()
+	res.json(productsFromDb)
 })
 
-app.get("/api/products/:id", (req, res) => {
-	const id = Number(req.params.id)
-
-	const findProduct = products.find(product => product.id === id)
-
+app.get("/api/products/:id", async (req, res) => {
+	const findProduct = await ProductModel.findById(req.params.id)
 	if (!findProduct) {
 		return res.status(404).json({ message: "Product not found" })
 	}
@@ -94,17 +88,29 @@ app.get("/api/inventory", (req, res) => {
 	res.json(inventory)
 })
 
-app.post("/api/products", (req, res) => {
-	const newProduct = req.body
-	const id = products.length + 1
-	const product = {
-		id,
-		...newProduct
-	}
-	products.push(product)
+app.post("/api/products", async (req, res) => {
+	const product = await ProductModel.create(req.body)
 	return res.status(201).json(product)
 })
 
-app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`)
-})
+const startServer = async () => {
+	if (!MONGODB_URI) {
+		throw new Error("MONGODB_URI is not defined")
+	}
+
+	try {
+		await mongoose.connect(MONGODB_URI, {
+			dbName: "sellerscope"
+		})
+
+		console.log("MongoDB connected")
+
+		app.listen(PORT, () => {
+			console.log(`Server running on http://localhost:${PORT}`)
+		})
+	} catch (error) {
+		console.error("Failed to connect to MongoDB", error)
+	}
+}
+
+startServer()
