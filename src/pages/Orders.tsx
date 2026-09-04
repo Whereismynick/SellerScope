@@ -80,8 +80,8 @@ const Orders = () => {
 						</thead>
 						<tbody>
 							{searchOrders.map(item => (
-								<tr key={item.id}>
-									<td>#{item.id}</td>
+								<tr key={item._id}>
+									<td>#{item.orderNumber}</td>
 									<td>{item.customer}</td>
 									<td>{item.date}</td>
 									<td>{item.amount.toLocaleString("ru-RU")} ₽</td>

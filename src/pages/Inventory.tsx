@@ -81,7 +81,7 @@ const Inventory = () => {
 								const available = item.stock - item.reserved
 
 								return (
-									<tr key={item.id}>
+									<tr key={item._id}>
 										<td>{item.name}</td>
 										<td>{item.sku}</td>
 										<td>{item.stock}</td>

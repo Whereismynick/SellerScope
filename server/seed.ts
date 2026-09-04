@@ -13,42 +13,108 @@ const orders = [
 		customer: "Anna Petrova",
 		date: "2026-08-18",
 		amount: 12900,
-		status: "Paid"
+		status: "Paid",
+		items: [
+			{
+				productId: "airpods-pro",
+				name: "AirPods Pro",
+				quantity: 1,
+				price: 12900
+			}
+		]
 	},
 	{
 		orderNumber: 1002,
 		customer: "Max Orlov",
 		date: "2026-08-18",
 		amount: 8400,
-		status: "Pending"
+		status: "Pending",
+		items: [
+			{
+				productId: "usb-c-hub",
+				name: "USB-C Hub",
+				quantity: 1,
+				price: 3400
+			},
+			{
+				productId: "macbook-stand",
+				name: "MacBook Stand",
+				quantity: 1,
+				price: 5000
+			}
+		]
 	},
 	{
 		orderNumber: 1003,
 		customer: "Dmitry Ivanov",
 		date: "2026-08-17",
 		amount: 21900,
-		status: "Paid"
+		status: "Paid",
+		items: [
+			{
+				productId: "usb-c-hub",
+				name: "USB-C Hub",
+				quantity: 1,
+				price: 5900
+			},
+			{
+				productId: "macbook-stand",
+				name: "MacBook Stand",
+				quantity: 2,
+				price: 8000
+			}
+		]
 	},
 	{
 		orderNumber: 1004,
 		customer: "Olga Smirnova",
 		date: "2026-08-17",
 		amount: 5600,
-		status: "Cancelled"
+		status: "Cancelled",
+		items: [
+			{
+				productId: "macbook-stand",
+				name: "MacBook Stand",
+				quantity: 1,
+				price: 5600
+			}
+		]
 	},
 	{
 		orderNumber: 1005,
 		customer: "Alex Morozov",
 		date: "2026-08-16",
 		amount: 17400,
-		status: "Paid"
+		status: "Paid",
+		items: [
+			{
+				productId: "apple-watch-series-9",
+				name: "Apple Watch Series 9",
+				quantity: 1,
+				price: 12000
+			},
+			{
+				productId: "usb-c-hub",
+				name: "USB-C Hub",
+				quantity: 1,
+				price: 5400
+			}
+		]
 	},
 	{
 		orderNumber: 1006,
 		customer: "Maria Volkova",
 		date: "2026-08-16",
 		amount: 9200,
-		status: "Pending"
+		status: "Pending",
+		items: [
+			{
+				productId: "airpods-pro",
+				name: "AirPods Pro",
+				quantity: 1,
+				price: 9200
+			}
+		]
 	}
 ]
 

@@ -1,64 +1,73 @@
 import {
-  CartesianGrid,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Line
+	CartesianGrid,
+	Line,
+	LineChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis
 } from "recharts"
 
 import style from "./RevenueChart.module.css"
+import type { Order } from "../../types/order"
 
-const revenueData = [
-  { day: "Mon", revenue: 120000 },
-  { day: "Tue", revenue: 180000 },
-  { day: "Wed", revenue: 150000 },
-  { day: "Thu", revenue: 230000 },
-  { day: "Fri", revenue: 210000 },
-  { day: "Sat", revenue: 260000 },
-  { day: "Sun", revenue: 240000 }
-]
+type RevenueChartProps = {
+	orders: Order[]
+}
 
-const RevenueChart = () => {
-  return (
-    <div className={style.chartCard}>
-      <h2 className={style.title}>Revenue Overview</h2>
+const RevenueChart = ({ orders }: RevenueChartProps) => {
+	const revenueByDate = orders
+		.filter(order => order.status === "Paid")
+		.reduce<Record<string, number>>((acc, order) => {
+			acc[order.date] = (acc[order.date] ?? 0) + order.amount
+			return acc
+		}, {})
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart
-          data={revenueData}
-          margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-          />
+	const chartData = Object.entries(revenueByDate)
+		.map(([date, revenue]) => ({
+			date,
+			revenue
+		}))
+		.sort((a, b) => a.date.localeCompare(b.date))
 
-          <XAxis
-            dataKey="day"
-            tickLine={false}
-            axisLine={false}
-          />
+	return (
+		<div className={style.chartCard}>
+			<h2 className={style.title}>Revenue Overview</h2>
 
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-          />
+			<ResponsiveContainer width="100%" height={300}>
+				<LineChart
+					data={chartData}
+					margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
+				>
+					<CartesianGrid
+						strokeDasharray="3 3"
+						vertical={false}
+					/>
 
-          <Tooltip />
+					<XAxis
+						dataKey="date"
+						tickLine={false}
+						axisLine={false}
+					/>
 
-          <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="#6366f1"
-            strokeWidth={3}
-            dot={{ r: 4 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  )
+					<YAxis
+						tickLine={false}
+						axisLine={false}
+					/>
+
+					<Tooltip />
+
+					<Line
+						type="monotone"
+						dataKey="revenue"
+						stroke="#6366f1"
+						strokeWidth={3}
+						dot={{ r: 4 }}
+					/>
+				</LineChart>
+			</ResponsiveContainer>
+		</div>
+	)
 }
 
 export default RevenueChart
