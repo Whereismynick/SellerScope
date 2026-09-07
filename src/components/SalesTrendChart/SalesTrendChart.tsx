@@ -1,16 +1,26 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import styles from "./SalesTrendChart.module.css"
+import type { Order } from "../../types/order"
 
-const salesData = [
-	{ day: "Mon", sales: 42 },
-	{ day: "Tue", sales: 58 },
-	{ day: "Wed", sales: 51 },
-	{ day: "Thu", sales: 73 },
-	{ day: "Fri", sales: 69 },
-	{ day: "Sat", sales: 88 },
-	{ day: "Sun", sales: 81 },
-]
-const SalesTrendChart = () => {
+type SalesTrendChartProps = {
+	orders: Order[]
+}
+
+const SalesTrendChart = ({ orders }: SalesTrendChartProps) => {
+
+	const salesByDate = orders
+		.filter(order => order.status === "Paid")
+		.reduce<Record<string, number>>((acc, order) => {
+			const orderSales = order.items.reduce((sum, item) => sum + item.quantity, 0)
+			acc[order.date] = (acc[order.date] ?? 0) + orderSales
+			return acc
+		}, {})
+
+	const salesData = Object.entries(salesByDate).map(([date, sales]) => ({
+		date,
+		sales
+	}))
+		.sort((a, b) => a.date.localeCompare(b.date))
 	return (
 		<div className={styles.chartCard}>
 			<h2 className={styles.title}>Sales Trend</h2>
@@ -24,7 +34,7 @@ const SalesTrendChart = () => {
 						vertical={false}
 					/>
 					<XAxis
-						dataKey="day"
+						dataKey="date"
 						tickLine={false}
 						axisLine={false}
 					/>

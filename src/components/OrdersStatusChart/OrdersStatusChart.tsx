@@ -6,14 +6,22 @@ import {
 	Tooltip,
 } from "recharts"
 import styles from "./OrdersStatusChart.module.css"
+import type { Order } from "../../types/order"
 
-const statusData = [
-	{ name: "Paid", value: 68, fill: "#22c55e" },
-	{ name: "Pending", value: 21, fill: "#f59e0b" },
-	{ name: "Cancelled", value: 11, fill: "#ef4444" },
-]
+type OrdersStatusChartProps = {
+	orders: Order[]
+}
 
-const OrdersStatusChart = () => {
+const OrdersStatusChart = ({ orders }: OrdersStatusChartProps) => {
+	const paid = orders.filter(order => order.status === "Paid").length
+	const pending = orders.filter(order => order.status === "Pending").length
+	const cancelled = orders.filter(order => order.status === "Cancelled").length
+	const statusData = [
+		{ name: "Paid", value: paid, fill: "#22c55e" },
+		{ name: "Pending", value: pending, fill: "#f59e0b" },
+		{ name: "Cancelled", value: cancelled, fill: "#ef4444" }
+	]
+
 	return (
 		<div className={styles.chartCard}>
 			<h2 className={styles.title}>Orders by Status</h2>

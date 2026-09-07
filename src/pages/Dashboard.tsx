@@ -84,8 +84,8 @@ const Dashboard = () => {
 		{}
 	)
 	const topProducts = Object.values(groupProducts)
-	.sort((a, b) => b.revenue - a.revenue)
-	.slice(0, 4)
+		.sort((a, b) => b.revenue - a.revenue)
+		.slice(0, 4)
 
 	return (
 		<div>
