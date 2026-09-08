@@ -13,20 +13,21 @@
 	margin-bottom: 16px;
 }
 
-.input {
-	padding: 12px 14px;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-}
-
+.input,
 .select {
 	padding: 12px 14px;
 	border: 1px solid #e2e8f0;
 	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+}
+
+.input {
+	flex: 1;
 }
 
 .tableCard {
-	background: white;
+	background: #ffffff;
 	border: 1px solid #e2e8f0;
 	border-radius: 12px;
 	overflow: hidden;
@@ -38,39 +39,262 @@
 }
 
 .table th {
-	color: #64748b;
-	text-align: left;
 	padding: 16px;
+	text-align: left;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 600;
 }
 
 .table td {
 	padding: 16px;
 	border-bottom: 1px solid #e2e8f0;
+	color: #0f172a;
 }
 
 .table tbody tr:last-child td {
 	border-bottom: none;
 }
 
+.table tbody tr:hover {
+	background: #f8fafc;
+}
+
 .status {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .paid {
-  color: #15803d;
-  background: #dcfce7;
+	color: #15803d;
+	background: #dcfce7;
 }
 
 .pending {
-  color: #a16207;
-  background: #fef3c7;
+	color: #a16207;
+	background: #fef3c7;
 }
 
 .cancelled {
-  color: #b91c1c;
-  background: #fee2e2;
+	color: #b91c1c;
+	background: #fee2e2;
+}
+
+.viewButton {
+	padding: 8px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.viewButton:hover {
+	background: #f8fafc;
+	border-color: #94a3b8;
+}
+
+.viewButton:focus {
+	outline: none;
+}
+
+.viewButton:focus-visible {
+	outline: 2px solid #6366f1;
+	outline-offset: 2px;
+}
+
+.drawerOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.28);
+	backdrop-filter: blur(2px);
+	z-index: 40;
+}
+
+.drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: min(460px, 100%);
+	height: 100vh;
+	padding: 28px;
+	overflow-y: auto;
+	background: #ffffff;
+	border-left: 1px solid #e2e8f0;
+	box-shadow: -12px 0 30px rgba(15, 23, 42, 0.12);
+	z-index: 50;
+}
+
+.drawerHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.drawerHeader h2 {
+	margin: 4px 0 6px;
+	font-size: 24px;
+	color: #0f172a;
+}
+
+.drawerEyebrow {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #6366f1;
+}
+
+.drawerCustomer {
+	margin: 0;
+	color: #64748b;
+}
+
+.closeButton {
+	width: 36px;
+	height: 36px;
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	background: #ffffff;
+	color: #475569;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.closeButton:hover {
+	background: #f8fafc;
+}
+
+.drawerMeta {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	padding: 24px 0;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.metaItem {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.metaItem span {
+	font-size: 13px;
+	color: #64748b;
+}
+
+.metaItem strong {
+	color: #0f172a;
+}
+
+.metaItem select {
+	width: 100%;
+	padding: 9px 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+	cursor: pointer;
+}
+
+.metaItem select:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.itemsSection {
+	padding-top: 24px;
+}
+
+.itemsSection h3 {
+	margin: 0 0 16px;
+	font-size: 16px;
+	color: #0f172a;
+}
+
+.itemsList {
+	display: flex;
+	flex-direction: column;
+}
+
+.itemRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	padding: 16px 0;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.itemRow:last-child {
+	border-bottom: none;
+}
+
+.itemName {
+	margin: 0 0 4px;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.itemMeta {
+	margin: 0;
+	font-size: 13px;
+	color: #64748b;
+}
+
+.savingText {
+	margin: 12px 0 0;
+	font-size: 13px;
+	color: #64748b;
+}
+
+.updateError {
+	margin: 12px 0 0;
+	color: #dc2626;
+	font-size: 14px;
+}
+
+@media (max-width: 640px) {
+	.toolbar {
+		flex-direction: column;
+	}
+
+	.input,
+	.select {
+		width: 100%;
+	}
+
+	.tableCard {
+		overflow-x: auto;
+	}
+
+	.table {
+		min-width: 720px;
+	}
+
+	.drawer {
+		width: 100%;
+		padding: 20px;
+	}
+
+	.drawerMeta {
+		grid-template-columns: 1fr;
+	}
 }

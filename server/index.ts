@@ -55,7 +55,7 @@ app.post("/api/inventory", async (req, res) => {
 
 app.delete("/api/products/:id", async (req, res) => {
 	const deletedProduct = await ProductModel.findByIdAndDelete(req.params.id)
-	if(!deletedProduct){
+	if (!deletedProduct) {
 		return res.status(404).json({ message: "Product not found" })
 	}
 	return res.json({ message: "Product deleted" })
@@ -68,11 +68,23 @@ app.patch("/api/products/:id", async (req, res) => {
 		{ new: true, runValidators: true }
 	)
 
-	if(!updatedProduct){
+	if (!updatedProduct) {
 		return res.status(404).json({ message: "Product not found" })
 	}
 
 	return res.json(updatedProduct)
+})
+
+app.patch("/api/orders/:id", async (req, res) => {
+	const updatedOrder = await OrderModel.findByIdAndUpdate(
+		req.params.id,
+		req.body, { new: true, runValidators: true }
+	)
+	if (!updatedOrder) {
+		return res.status(404).json({ message: "Order not found" })
+	}
+
+	return res.json(updatedOrder)
 })
 
 const startServer = async () => {
