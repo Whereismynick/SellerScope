@@ -1,84 +1,196 @@
 .page {
-  width: 100%;
+	width: 100%;
 }
 
 .title {
-  font-size: 24px;
-  margin-bottom: 16px;
-  color: #0f172a;
+	font-size: 24px;
+	margin-bottom: 16px;
+	color: #0f172a;
 }
 
 .toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 16px;
 }
 
 .search {
-  min-width: 280px;
-  padding: 12px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  outline: none;
+	min-width: 280px;
+	padding: 12px 14px;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+	outline: none;
 }
 
 .search:focus {
-  border-color: #6366f1;
+	border-color: #6366f1;
 }
 
 .checkboxLabel {
-  margin-right: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-right: 8px;
+	color: #475569;
+	font-size: 14px;
+	cursor: pointer;
 }
 
 .tableCard {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	overflow: hidden;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
+	width: 100%;
+	border-collapse: collapse;
 }
 
 .table th {
-  padding: 16px;
-  text-align: left;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 600;
+	padding: 16px;
+	text-align: left;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 600;
 }
 
 .table td {
-  padding: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #0f172a;
+	padding: 16px;
+	border-bottom: 1px solid #e2e8f0;
+	color: #0f172a;
+	vertical-align: middle;
 }
 
 .table tbody tr:last-child td {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 .table tbody tr:hover {
-  background: #f8fafc;
+	background: #f8fafc;
 }
 
 .status {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .inStock {
-  color: #15803d;
-  background: #dcfce7;
+	color: #15803d;
+	background: #dcfce7;
 }
 
 .lowStock {
-  color: #a16207;
-  background: #fef3c7;
+	color: #a16207;
+	background: #fef3c7;
+}
+
+.numberInput {
+	width: 90px;
+	padding: 8px 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+	outline: none;
+}
+
+.numberInput:focus {
+	border-color: #6366f1;
+	box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+	padding: 8px 12px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		opacity 0.15s ease;
+}
+
+.editButton {
+	border: 1px solid #cbd5e1;
+	background: #ffffff;
+	color: #0f172a;
+}
+
+.editButton:hover {
+	background: #f8fafc;
+	border-color: #94a3b8;
+}
+
+.saveButton {
+	border: 1px solid #6366f1;
+	background: #6366f1;
+	color: #ffffff;
+}
+
+.saveButton:hover {
+	background: #4f46e5;
+	border-color: #4f46e5;
+}
+
+.cancelButton {
+	border: 1px solid #cbd5e1;
+	background: #ffffff;
+	color: #475569;
+}
+
+.cancelButton:hover {
+	background: #f8fafc;
+}
+
+.editButton:disabled,
+.saveButton:disabled,
+.cancelButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
+}
+
+.editError {
+	width: 100%;
+	margin: 4px 0 0;
+	color: #dc2626;
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+	.toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.search {
+		min-width: 0;
+		width: 100%;
+	}
+
+	.tableCard {
+		overflow-x: auto;
+	}
+
+	.table {
+		min-width: 820px;
+	}
 }

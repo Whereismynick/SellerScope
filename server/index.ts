@@ -87,6 +87,17 @@ app.patch("/api/orders/:id", async (req, res) => {
 	return res.json(updatedOrder)
 })
 
+app.patch("/api/inventory/:id", async (req, res) => {
+	const updatedInventoryItem = await InventoryItemModel.findByIdAndUpdate(
+		req.params.id,
+		req.body, { new: true, runValidators: true }
+	)
+	if(!updatedInventoryItem) {
+		return res.status(404).json({  message: "Inventory item not found" })
+	}
+	return res.json(updatedInventoryItem)
+})
+
 const startServer = async () => {
 	if (!MONGODB_URI) {
 		throw new Error("MONGODB_URI is not defined")
