@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
+import bcrypt from "bcryptjs"
 import { ProductModel } from "./models/Product"
 import { OrderModel } from "./models/Order"
 import { InventoryItemModel } from "./models/Inventory"
@@ -10,14 +11,104 @@ import { ZodError } from "zod"
 import { productCreateSchema, productUpdateSchema } from "./validation/product"
 import { orderCreateSchema, orderUpdateSchema } from "./validation/order"
 import { inventoryCreateSchema, inventoryUpdateSchema } from "./validation/inventory"
+import { UserModel } from "./models/User"
+import { loginSchema, registerSchema } from "./validation/auth"
+import jwt from "jsonwebtoken"
+import { authMiddleware } from "./middleware/auth"
 
 const app = express()
 const PORT = 3001
 dotenv.config()
 const MONGODB_URI = process.env.MONGODB_URI
+const JWT_SECRET = process.env.JWT_SECRET
 
 app.use(cors())
 app.use(express.json())
+
+app.post("/api/auth/register", async (req, res, next) => {
+	try {
+		const validateData = registerSchema.parse(req.body)
+		const existingUser = await UserModel.findOne({
+			email: validateData.email
+		})
+		if (existingUser) {
+			return res.status(409).json({
+				message: "User already exists"
+			})
+		}
+		const passwordHash = await bcrypt.hash(validateData.password, 10)
+		const user = await UserModel.create({
+			name: validateData.name,
+			email: validateData.email,
+			passwordHash
+		})
+
+		if (!JWT_SECRET) {
+			throw new Error("JWT_SECRET is not defined")
+		}
+
+		const token = jwt.sign(
+			{ userId: user._id },
+			JWT_SECRET,
+			{ expiresIn: "7d" }
+		)
+
+		return res.status(201).json({
+			_id: user._id,
+			name: user.name,
+			email: user.email,
+			token
+		})
+	} catch (error) {
+		next(error)
+	}
+})
+
+app.post("/api/auth/login", async (req, res, next) => {
+	try {
+		const validateData = loginSchema.parse(req.body)
+		const findUser = await UserModel.findOne({
+			email: validateData.email
+		})
+
+		if (!findUser) {
+			return res.status(401).json({
+				message: "Invalid email or password"
+			})
+		}
+
+		const isPasswordValid = await bcrypt.compare(
+			validateData.password,
+			findUser.passwordHash
+		)
+		if (!isPasswordValid) {
+			return res.status(401).json({
+				message: "Invalid email or password"
+			})
+		}
+
+		if (!JWT_SECRET) {
+			throw new Error("JWT_SECRET is not defined")
+		}
+
+		const token = jwt.sign(
+			{ userId: findUser._id },
+			JWT_SECRET,
+			{ expiresIn: "7d" }
+		)
+
+		return res.json({
+			_id: findUser._id,
+			name: findUser.name,
+			email: findUser.email,
+			token
+		})
+	} catch (error) {
+		next(error)
+	}
+})
+
+app.use(authMiddleware)
 
 app.get("/api/products", async (req, res, next) => {
 	try {

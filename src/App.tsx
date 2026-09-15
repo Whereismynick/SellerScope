@@ -7,10 +7,14 @@ import Products from "./pages/Products"
 import Settings from "./pages/Settings"
 import MainLayout from "./layouts/MainLayout"
 import ProductDetails from "./pages/ProductDetails"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/login" element={<Login />}/>
+      <Route path="/register" element={<Register />}/>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
