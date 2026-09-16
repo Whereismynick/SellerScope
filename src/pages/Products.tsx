@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { apiClient } from "../api/apiClient"
 
 const productSchema = z.object({
 	name: z.string().trim().min(1, "Product name is required"),
@@ -26,65 +27,38 @@ type UpdateProduct = {
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
-	const response = await fetch("http://localhost:3001/api/products")
+	const response = await apiClient.get<Product[]>("/products")
 
-	if (!response.ok) {
-		throw new Error("Failed to load products")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const createProduct = async (newProduct: NewProduct): Promise<Product> => {
-	const response = await fetch("http://localhost:3001/api/products", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(newProduct)
-	})
+	const response = await apiClient.post<Product>("/products", newProduct)
 
-	if (!response.ok) {
-		throw new Error("Failed to create product")
-	}
-
-	return response.json()
+	return response.data
 }
 
-const deleteProduct = async (id: string): Promise<void> => {
-	const response = await fetch(`http://localhost:3001/api/products/${id}`, {
-		method: "DELETE"
-	})
 
-	if (!response.ok) {
-		throw new Error("Failed to delete product")
-	}
+const deleteProduct = async (id: string): Promise<void> => {
+	await apiClient.delete(`/products/${id}`)
 }
 
 const updateProduct = async ({
 	id,
 	data
 }: UpdateProduct): Promise<Product> => {
-	const response = await fetch(`http://localhost:3001/api/products/${id}`, {
-		method: "PATCH",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(data)
-	})
+	const response = await apiClient.patch<Product>(
+		`/products/${id}`,
+		data
+	)
 
-	if (!response.ok) {
-		throw new Error("Failed to update product")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const Products = () => {
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState("All")
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-
 	const queryClient = useQueryClient()
 
 	const getStatusClass = (status: ProductStatus) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import styles from "./Orders.module.css"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Order, OrderStatus } from "../types/order"
+import { apiClient } from "../api/apiClient"
 
 type UpdateOrderStatus = {
 	id: string
@@ -12,29 +13,18 @@ const updateOrderStatus = async ({
 	id,
 	status
 }: UpdateOrderStatus): Promise<Order> => {
-	const response = await fetch(`http://localhost:3001/api/orders/${id}`, {
-		method: "PATCH",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({ status })
-	})
+	const response = await apiClient.patch<Order>(
+		`/orders/${id}`,
+		{ status }
+	)
 
-	if (!response.ok) {
-		throw new Error("Failed to update order status")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const fetchOrders = async (): Promise<Order[]> => {
-	const response = await fetch("http://localhost:3001/api/orders")
+	const response = await apiClient.get<Order[]>("/orders")
 
-	if (!response.ok) {
-		throw new Error("Failed to load orders")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const Orders = () => {

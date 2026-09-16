@@ -6,6 +6,7 @@ import {
 	useQuery,
 	useQueryClient
 } from "@tanstack/react-query"
+import { apiClient } from "../api/apiClient"
 
 type UpdateInventoryItem = {
 	id: string
@@ -19,32 +20,18 @@ const updateInventoryItem = async ({
 	id,
 	data
 }: UpdateInventoryItem): Promise<InventoryItem> => {
-	const response = await fetch(
-		`http://localhost:3001/api/inventory/${id}`,
-		{
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(data)
-		}
+	const response = await apiClient.patch<InventoryItem>(
+		`/inventory/${id}`,
+		data
 	)
 
-	if (!response.ok) {
-		throw new Error("Failed to update inventory")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const fetchInventory = async (): Promise<InventoryItem[]> => {
-	const response = await fetch("http://localhost:3001/api/inventory")
+	const response = await apiClient.get<InventoryItem[]>("/inventory")
 
-	if (!response.ok) {
-		throw new Error("Failed to load inventory")
-	}
-
-	return response.json()
+	return response.data
 }
 
 const Inventory = () => {
