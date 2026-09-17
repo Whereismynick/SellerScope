@@ -2,13 +2,12 @@ import { Link, useParams } from "react-router-dom"
 import { type Product, type ProductStatus } from "../types/product"
 import styles from "./ProductDetails.module.css"
 import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "../api/apiClient"
 
 
 const fetchProduct = async (id: string): Promise<Product> => {
-		const response = await fetch(`http://localhost:3001/api/products/${id}`)
-		if (!response.ok) throw new Error(`Failed to load product`)
-		const data = await response.json()
-		return data
+		const response = await apiClient.get<Product>(`/products/${id}`)
+		return response.data
 	}
 
 const ProductDetails = () => {

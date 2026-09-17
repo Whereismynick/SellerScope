@@ -6,6 +6,7 @@ import type { Order } from "../types/order"
 import type { Product } from "../types/product"
 import styles from "./Dashboard.module.css"
 import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "../api/apiClient"
 
 type GroupedProduct = {
 	product: string
@@ -14,19 +15,13 @@ type GroupedProduct = {
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
-	const response = await fetch("http://localhost:3001/api/products")
-	if (!response.ok) {
-		throw new Error("Failed to load products")
-	}
-	return response.json()
+	const response = await apiClient.get<Product[]>("/products")
+	return response.data
 }
 
 const fetchOrders = async (): Promise<Order[]> => {
-	const response = await fetch("http://localhost:3001/api/orders")
-	if (!response.ok) {
-		throw new Error("Failed to load orders")
-	}
-	return response.json()
+	const response = await apiClient.get<Order[]>("/orders")
+	return response.data
 }
 
 const Dashboard = () => {

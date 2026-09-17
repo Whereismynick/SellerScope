@@ -4,13 +4,11 @@ import OrdersStatusChart from "../components/OrdersStatusChart/OrdersStatusChart
 import styles from "./Analytics.module.css"
 import { useQuery } from "@tanstack/react-query"
 import type { Order } from "../types/order"
+import { apiClient } from "../api/apiClient"
 
 const fetchOrders = async (): Promise<Order[]> => {
-  const response = await fetch('http://localhost:3001/api/orders')
-  if (!response.ok) {
-    throw new Error("Failed to load orders")
-  }
-  return response.json()
+  const response = await apiClient.get<Order[]>("/orders")
+  return response.data
 }
 
 const Analytics = () => {

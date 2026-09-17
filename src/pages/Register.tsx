@@ -9,19 +9,32 @@ const Register = () => {
 	const [name, setName] = useState("")
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
+	const [error, setError] = useState("")
 	const { login } = useAuth()
 	const navigate = useNavigate()
 	const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		const response = await axios.post<AuthResponse>(
-			"http://localhost:3001/api/auth/register", {
-			name,
-			email,
-			password
+		setError("")
+		try {
+			const response = await axios.post<AuthResponse>(
+				"http://localhost:3001/api/auth/register",
+				{
+					name,
+					email,
+					password
+				}
+			)
+
+			login(response.data)
+			navigate("/")
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				setError(error.response?.data?.message || "Registration failed")
+				return
+			}
+
+			setError("Registration failed")
 		}
-		)
-		login(response.data)
-		navigate("/")
 	}
 
 	return (
@@ -49,6 +62,7 @@ const Register = () => {
 				/>
 
 				<button type="submit">Зарегистрироваться</button>
+				{error && <p>{error}</p>}
 			</form>
 		</div>
 	)

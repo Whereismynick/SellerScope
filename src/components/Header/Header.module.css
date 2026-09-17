@@ -29,10 +29,9 @@
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -40,4 +39,20 @@
   background: #6366f1;
   color: white;
   font-weight: 700;
+}
+
+.logoutButton {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-size: 13px;
+  padding: 5px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.logoutButton:hover {
+  background: #f8fafc;
+  color: #0f172a;
 }
