@@ -14,6 +14,12 @@ const InventoryItemSchema = new Schema(
 			required: true,
 			trim: true
 		},
+		userId: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+			index: true
+		},
 		sku: {
 			type: String,
 			required: true,
@@ -30,8 +36,8 @@ const InventoryItemSchema = new Schema(
 			min: 0
 		}
 	}, {
-		timestamps: true
-	}
+	timestamps: true
+}
 )
 
 export const InventoryItemModel = model("InventoryItem", InventoryItemSchema)

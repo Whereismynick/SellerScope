@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import { OrderModel } from "./models/Order"
 import { InventoryItemModel } from "./models/Inventory"
+import { UserModel } from "./models/User"
 
 dotenv.config()
 
@@ -167,11 +168,33 @@ const seed = async () => {
 			dbName: "sellerscope"
 		})
 
-		await OrderModel.deleteMany({})
-		await InventoryItemModel.deleteMany({})
+		const user = await UserModel.findOne()
 
-		await OrderModel.insertMany(orders)
-		await InventoryItemModel.insertMany(inventory)
+		if (!user) {
+			throw new Error("Seed user not found")
+		}
+
+		await OrderModel.deleteMany({
+			userId: user._id
+		})
+
+		await InventoryItemModel.deleteMany({
+			userId: user._id
+		})
+
+		await OrderModel.insertMany(
+			orders.map(order => ({
+				...order,
+				userId: user._id
+			}))
+		)
+
+		await InventoryItemModel.insertMany(
+			inventory.map(item => ({
+				...item,
+				userId: user._id
+			}))
+		)
 
 		console.log("Seed completed")
 	} catch (error) {

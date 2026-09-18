@@ -1,9 +1,10 @@
 import { useState } from "react"
 import type { SubmitEvent } from "react"
-import axios from "axios"
 import type { AuthResponse } from "../types/auth"
 import { useAuth } from "../hooks/useAuth"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
+import { isAxiosError } from "axios"
+import { apiClient } from "../api/apiClient"
 
 const Register = () => {
 	const [name, setName] = useState("")
@@ -16,8 +17,8 @@ const Register = () => {
 		e.preventDefault()
 		setError("")
 		try {
-			const response = await axios.post<AuthResponse>(
-				"http://localhost:3001/api/auth/register",
+			const response = await apiClient.post<AuthResponse>(
+				"/auth/register",
 				{
 					name,
 					email,
@@ -28,7 +29,7 @@ const Register = () => {
 			login(response.data)
 			navigate("/")
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
+			if (isAxiosError(error)) {
 				setError(error.response?.data?.message || "Registration failed")
 				return
 			}
@@ -62,6 +63,9 @@ const Register = () => {
 				/>
 
 				<button type="submit">Зарегистрироваться</button>
+				<p>
+					Уже есть аккаунт? <Link to="/login">Войти</Link>
+				</p>
 				{error && <p>{error}</p>}
 			</form>
 		</div>

@@ -1,10 +1,10 @@
 import { useState } from "react"
 import type { SubmitEvent } from "react"
 import { useAuth } from "../hooks/useAuth"
-import axios from "axios"
+import { apiClient } from "../api/apiClient"
 import type { AuthResponse } from "../types/auth"
-import { useNavigate } from "react-router-dom"
-
+import { isAxiosError } from "axios"
+import { Link, useNavigate } from "react-router-dom"
 
 const Login = () => {
 	const [email, setEmail] = useState("")
@@ -17,19 +17,23 @@ const Login = () => {
 	const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		setError("")
+
 		try {
-			const response = await axios.post<AuthResponse>(
-				"http://localhost:3001/api/auth/login",
+			const response = await apiClient.post<AuthResponse>(
+				"/auth/login",
 				{
 					email,
 					password
 				}
 			)
+
 			login(response.data)
 			navigate("/")
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message || "Invalid email or password")
+			if (isAxiosError(error)) {
+				setError(
+					error.response?.data?.message || "Invalid email or password"
+				)
 				return
 			}
 
@@ -53,7 +57,9 @@ const Login = () => {
 					onChange={e => setPassword(e.target.value)}
 					placeholder="Password"
 				/>
+
 				<button type="submit">Войти</button>
+				<p>Нет аккаунта? <Link to="/register">Зарегистрироваться</Link></p>
 				{error && <p>{error}</p>}
 			</form>
 		</div>

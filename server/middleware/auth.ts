@@ -1,12 +1,17 @@
 import jwt from "jsonwebtoken"
 import type { Request, Response, NextFunction } from "express"
 
+type AuthPayload = {
+	userId: string
+}
+
 export const authMiddleware = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	const authHeader = req.headers.authorization
+
 	if (!authHeader?.startsWith("Bearer ")) {
 		return res.status(401).json({ message: "Unauthorized" })
 	}
@@ -19,10 +24,12 @@ export const authMiddleware = (
 	}
 
 	try {
-		jwt.verify(token, JWT_SECRET)
+		const payload = jwt.verify(token, JWT_SECRET) as AuthPayload
+
+		req.userId = payload.userId
+
 		next()
 	} catch {
 		return res.status(401).json({ message: "Unauthorized" })
 	}
-
 }

@@ -112,7 +112,9 @@ app.use(authMiddleware)
 
 app.get("/api/products", async (req, res, next) => {
 	try {
-		const productsFromDb = await ProductModel.find()
+		const productsFromDb = await ProductModel.find({
+			userId: req.userId
+		})
 		res.json(productsFromDb)
 	} catch (error) {
 		next(error)
@@ -121,7 +123,11 @@ app.get("/api/products", async (req, res, next) => {
 
 app.get("/api/products/:id", async (req, res, next) => {
 	try {
-		const findProduct = await ProductModel.findById(req.params.id)
+		const findProduct = await ProductModel.findOne({
+			_id: req.params.id,
+			userId: req.userId
+		})
+
 		if (!findProduct) {
 			return res.status(404).json({ message: "Product not found" })
 		}
@@ -134,7 +140,9 @@ app.get("/api/products/:id", async (req, res, next) => {
 
 app.get("/api/orders", async (req, res, next) => {
 	try {
-		const ordersFromDb = await OrderModel.find()
+		const ordersFromDb = await OrderModel.find({
+			userId: req.userId
+		})
 		res.json(ordersFromDb)
 	} catch (error) {
 		next(error)
@@ -143,7 +151,9 @@ app.get("/api/orders", async (req, res, next) => {
 
 app.get("/api/inventory", async (req, res, next) => {
 	try {
-		const inventoryFromDb = await InventoryItemModel.find()
+		const inventoryFromDb = await InventoryItemModel.find({
+			userId: req.userId
+		})
 		res.json(inventoryFromDb)
 	} catch (error) {
 		next(error)
@@ -153,7 +163,10 @@ app.get("/api/inventory", async (req, res, next) => {
 app.post("/api/products", async (req, res, next) => {
 	try {
 		const validatedData = productCreateSchema.parse(req.body)
-		const product = await ProductModel.create(validatedData)
+		const product = await ProductModel.create({
+			...validatedData,
+			userId: req.userId
+		})
 		return res.status(201).json(product)
 	} catch (error) {
 		next(error)
@@ -163,7 +176,10 @@ app.post("/api/products", async (req, res, next) => {
 app.post("/api/orders", async (req, res, next) => {
 	try {
 		const validateData = orderCreateSchema.parse(req.body)
-		const order = await OrderModel.create(validateData)
+		const order = await OrderModel.create({
+			...validateData,
+			userId: req.userId
+		})
 		return res.status(201).json(order)
 	} catch (error) {
 		next(error)
@@ -173,7 +189,10 @@ app.post("/api/orders", async (req, res, next) => {
 app.post("/api/inventory", async (req, res, next) => {
 	try {
 		const validateData = inventoryCreateSchema.parse(req.body)
-		const inventory = await InventoryItemModel.create(validateData)
+		const inventory = await InventoryItemModel.create({
+			...validateData,
+			userId: req.userId
+		})
 		return res.status(201).json(inventory)
 	} catch (error) {
 		next(error)
@@ -182,7 +201,10 @@ app.post("/api/inventory", async (req, res, next) => {
 
 app.delete("/api/products/:id", async (req, res, next) => {
 	try {
-		const deletedProduct = await ProductModel.findByIdAndDelete(req.params.id)
+		const deletedProduct = await ProductModel.findOneAndDelete({
+			_id: req.params.id,
+			userId: req.userId
+		})
 		if (!deletedProduct) {
 			return res.status(404).json({ message: "Product not found" })
 		}
@@ -195,10 +217,17 @@ app.delete("/api/products/:id", async (req, res, next) => {
 app.patch("/api/products/:id", async (req, res, next) => {
 	try {
 		const validateData = productUpdateSchema.parse(req.body)
-		const updatedProduct = await ProductModel.findByIdAndUpdate(
-			req.params.id,
+
+		const updatedProduct = await ProductModel.findOneAndUpdate(
+			{
+				_id: req.params.id,
+				userId: req.userId
+			},
 			validateData,
-			{ new: true, runValidators: true }
+			{
+				new: true,
+				runValidators: true
+			}
 		)
 
 		if (!updatedProduct) {
@@ -214,10 +243,16 @@ app.patch("/api/products/:id", async (req, res, next) => {
 app.patch("/api/orders/:id", async (req, res, next) => {
 	try {
 		const validateData = orderUpdateSchema.parse(req.body)
-		const updatedOrder = await OrderModel.findByIdAndUpdate(
-			req.params.id,
+		const updatedOrder = await OrderModel.findOneAndUpdate(
+			{
+				_id: req.params.id,
+				userId: req.userId
+			},
 			validateData,
-			{ new: true, runValidators: true }
+			{
+				new: true,
+				runValidators: true
+			}
 		)
 		if (!updatedOrder) {
 			return res.status(404).json({ message: "Order not found" })
@@ -232,10 +267,16 @@ app.patch("/api/orders/:id", async (req, res, next) => {
 app.patch("/api/inventory/:id", async (req, res, next) => {
 	try {
 		const validateData = inventoryUpdateSchema.parse(req.body)
-		const updatedInventoryItem = await InventoryItemModel.findByIdAndUpdate(
-			req.params.id,
+		const updatedInventoryItem = await InventoryItemModel.findOneAndUpdate(
+			{
+				_id: req.params.id,
+				userId: req.userId
+			},
 			validateData,
-			{ new: true, runValidators: true }
+			{
+				new: true,
+				runValidators: true
+			}
 		)
 		if (!updatedInventoryItem) {
 			return res.status(404).json({ message: "Inventory item not found" })
