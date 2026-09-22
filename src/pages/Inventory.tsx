@@ -100,21 +100,6 @@ const Inventory = () => {
 		})
 	}
 
-	if (isLoading) {
-		return <p>Loading inventory...</p>
-	}
-
-	if (error) {
-		return (
-			<div>
-				<p>{error.message}</p>
-				<button onClick={() => refetch()}>
-					Retry
-				</button>
-			</div>
-		)
-	}
-
 	const filteredInventory = items.filter(item =>
 		(
 			item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -144,7 +129,16 @@ const Inventory = () => {
 			</div>
 
 			<div className={styles.tableCard}>
-				{filteredInventory.length === 0 ? (
+				{isLoading ? (
+					<p>Loading inventory...</p>
+				) : error ? (
+					<div>
+						<p>{error.message}</p>
+						<button onClick={() => refetch()}>
+							Retry
+						</button>
+					</div>
+				) : filteredInventory.length === 0 ? (
 					<p>No inventory found</p>
 				) : (
 					<table className={styles.table}>

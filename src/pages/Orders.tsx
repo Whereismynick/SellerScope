@@ -78,21 +78,6 @@ const Orders = () => {
 		}
 	})
 
-	if (isLoading) {
-		return <p>Loading orders...</p>
-	}
-
-	if (error) {
-		return (
-			<div>
-				<p>{error.message}</p>
-				<button onClick={() => refetch()}>
-					Retry
-				</button>
-			</div>
-		)
-	}
-
 	const searchOrders = items.filter(
 		item =>
 			item.customer.toLowerCase().includes(search.toLowerCase()) &&
@@ -122,7 +107,16 @@ const Orders = () => {
 			</div>
 
 			<div className={styles.tableCard}>
-				{searchOrders.length === 0 ? (
+				{isLoading ? (
+					<p>Loading orders...</p>
+				) : error ? (
+					<div>
+						<p>{error.message}</p>
+						<button onClick={() => refetch()}>
+							Retry
+						</button>
+					</div>
+				) : searchOrders.length === 0 ? (
 					<p>No orders found</p>
 				) : (
 					<>
@@ -183,8 +177,14 @@ const Orders = () => {
 								<aside className={styles.drawer}>
 									<div className={styles.drawerHeader}>
 										<div>
-											<p className={styles.drawerEyebrow}>Order details</p>
-											<h2>Order #{selectedOrder.orderNumber}</h2>
+											<p className={styles.drawerEyebrow}>
+												Order details
+											</p>
+
+											<h2>
+												Order #{selectedOrder.orderNumber}
+											</h2>
+
 											<p className={styles.drawerCustomer}>
 												{selectedOrder.customer}
 											</p>
@@ -207,6 +207,7 @@ const Orders = () => {
 
 										<div className={styles.metaItem}>
 											<span>Total</span>
+
 											<strong>
 												{selectedOrder.amount.toLocaleString("ru-RU")} ₽
 											</strong>
@@ -233,7 +234,9 @@ const Orders = () => {
 									</div>
 
 									{updateStatusMutation.isPending && (
-										<p className={styles.savingText}>Saving...</p>
+										<p className={styles.savingText}>
+											Saving...
+										</p>
 									)}
 
 									{updateStatusMutation.error && (
@@ -263,7 +266,9 @@ const Orders = () => {
 													</div>
 
 													<strong>
-														{(item.price * item.quantity).toLocaleString("ru-RU")} ₽
+														{(
+															item.price * item.quantity
+														).toLocaleString("ru-RU")} ₽
 													</strong>
 												</div>
 											))}

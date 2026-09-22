@@ -28,7 +28,8 @@ const Dashboard = () => {
 	const {
 		data: products = [],
 		isLoading: productsLoading,
-		error: productsError
+		error: productsError,
+		refetch: refetchProducts
 	} = useQuery({
 		queryKey: ["products"],
 		queryFn: fetchProducts
@@ -37,26 +38,61 @@ const Dashboard = () => {
 	const {
 		data: orders = [],
 		isLoading: ordersLoading,
-		error: ordersError
+		error: ordersError,
+		refetch: refetchOrders
 	} = useQuery({
 		queryKey: ["orders"],
 		queryFn: fetchOrders
 	})
 
 	if (ordersLoading || productsLoading) {
-		return <p>Loading dashboard</p>
+		return (
+			<div className={styles.stateCard}>
+				Loading dashboard...
+			</div>
+		)
 	}
 
 	if (ordersError || productsError) {
-		return <p>Failed to load dashboard</p>
+		return (
+			<div className={styles.stateCard}>
+				<p className={styles.errorText}>
+					Failed to load dashboard
+				</p>
+
+				<button
+					className={styles.retryButton}
+					onClick={() => {
+						refetchProducts()
+						refetchOrders()
+					}}
+				>
+					Retry
+				</button>
+			</div>
+		)
+	}
+
+	if (products.length === 0 && orders.length === 0) {
+		return (
+			<div className={styles.stateCard}>
+				No data yet. Add your first product to get started.
+			</div>
+		)
 	}
 
 	const revenue = orders
 		.filter(order => order.status === "Paid")
 		.reduce((sum, order) => sum + order.amount, 0)
+
 	const lowStockProducts = products
-		.filter(product => product.status === "Low Stock" ||
-			product.status === "Out of Stock").length
+		.filter(
+			product =>
+				product.status === "Low Stock" ||
+				product.status === "Out of Stock"
+		)
+		.length
+
 	const paidItems = orders
 		.filter(order => order.status === "Paid")
 		.flatMap(order => order.items)
@@ -78,6 +114,7 @@ const Dashboard = () => {
 		},
 		{}
 	)
+
 	const topProducts = Object.values(groupProducts)
 		.sort((a, b) => b.revenue - a.revenue)
 		.slice(0, 4)

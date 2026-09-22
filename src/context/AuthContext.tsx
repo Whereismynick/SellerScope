@@ -5,9 +5,11 @@ import type { ReactNode } from "react"
 export type AuthContextValue = {
 	user: AuthUser | null,
 	token: string | null,
-	login: (data: AuthResponse) => void
-	logout: () => void
+	login: (data: AuthResponse) => void,
+	logout: () => void,
+	updateUser: (data: Partial<AuthUser>) => void
 }
+
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
@@ -37,12 +39,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		localStorage.removeItem("user")
 		localStorage.removeItem("token")
 	}
+	const updateUser = (data: Partial<AuthUser>) => {
+	setUser(currentUser => {
+		if(!currentUser) return currentUser
+
+		const updatedUser = {
+			...currentUser,
+			...data
+		}
+		localStorage.setItem("user", JSON.stringify(updatedUser))
+		return updatedUser
+	})
+}
 	return (
 		<AuthContext.Provider value={{
 			user,
 			token,
 			login,
-			logout
+			logout,
+			updateUser
 		}}>{children}</AuthContext.Provider>
 	)
 }

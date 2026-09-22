@@ -15,6 +15,7 @@ import { UserModel } from "./models/User"
 import { loginSchema, registerSchema } from "./validation/auth"
 import jwt from "jsonwebtoken"
 import { authMiddleware } from "./middleware/auth"
+import { settingsSchema, settingsUpdateSchema } from "./validation/settings"
 
 const app = express()
 const PORT = 3001
@@ -160,6 +161,26 @@ app.get("/api/inventory", async (req, res, next) => {
 	}
 })
 
+app.get("/api/settings", async (req, res, next) => {
+	try {
+		const user = await UserModel.findById(req.userId)
+		if (!user) {
+			return res.status(404).json({
+				message: "User not found"
+			})
+		}
+		res.json({
+			name: user.name,
+			email: user.email,
+			storeName: user.storeName,
+			currency: user.currency,
+			notifications: user.notifications
+		})
+	} catch (error) {
+		next(error)
+	}
+})
+
 app.post("/api/products", async (req, res, next) => {
 	try {
 		const validatedData = productCreateSchema.parse(req.body)
@@ -282,6 +303,37 @@ app.patch("/api/inventory/:id", async (req, res, next) => {
 			return res.status(404).json({ message: "Inventory item not found" })
 		}
 		return res.json(updatedInventoryItem)
+	} catch (error) {
+		next(error)
+	}
+})
+
+app.patch("/api/settings", async (req, res, next) => {
+	try {
+		const validateData = settingsUpdateSchema.parse(req.body)
+
+		const updatedUser = await UserModel.findByIdAndUpdate(
+			req.userId,
+			validateData,
+			{
+				new: true,
+				runValidators: true
+			}
+		)
+
+		if (!updatedUser) {
+			return res.status(404).json({
+				message: "User not found"
+			})
+		}
+
+		return res.json({
+			name: updatedUser.name,
+			email: updatedUser.email,
+			storeName: updatedUser.storeName,
+			currency: updatedUser.currency,
+			notifications: updatedUser.notifications
+		})
 	} catch (error) {
 		next(error)
 	}
