@@ -197,9 +197,18 @@ app.post("/api/products", async (req, res, next) => {
 app.post("/api/orders", async (req, res, next) => {
 	try {
 		const validateData = orderCreateSchema.parse(req.body)
+		const lastOrder = await OrderModel
+			.findOne({ userId: req.userId })
+			.sort({ orderNumber: -1 })
+
+		const orderNumber = lastOrder
+			? lastOrder.orderNumber + 1
+			: 1
 		const order = await OrderModel.create({
 			...validateData,
-			userId: req.userId
+			date: new Date().toISOString(),
+			orderNumber,
+			userId: req.userId,
 		})
 		return res.status(201).json(order)
 	} catch (error) {

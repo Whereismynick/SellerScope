@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import styles from "./Orders.module.css"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { Order, OrderStatus } from "../types/order"
+import type { Order, OrderStatus, OrderItem } from "../types/order"
 import { apiClient } from "../api/apiClient"
+import type { Product } from "../types/product"
 
 type UpdateOrderStatus = {
 	id: string
@@ -27,10 +28,42 @@ const fetchOrders = async (): Promise<Order[]> => {
 	return response.data
 }
 
+type CreateOrderData = {
+	customer: string
+	amount: number
+	status: OrderStatus
+	items: {
+		productId: string
+		name: string
+		quantity: number
+		price: number
+	}[]
+}
+
+const createOrder = async (
+	data: CreateOrderData
+): Promise<Order> => {
+	const response = await apiClient.post<Order>(
+		"/orders",
+		data
+	)
+
+	return response.data
+}
+
+const fetchProducts = async (): Promise<Product[]> => {
+	const response = await apiClient.get<Product[]>("/products")
+	return response.data
+}
+
 const Orders = () => {
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState("All")
 	const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+	const [customer, setCustomer] = useState("")
+	const [selectedProductId, setSelectedProductId] = useState("")
+	const [quantity, setQuantity] = useState(1)
+	const [orderItems, setOrderItems] = useState<OrderItem[]>([])
 
 	useEffect(() => {
 		if (!selectedOrder) return
@@ -68,6 +101,13 @@ const Orders = () => {
 		queryFn: fetchOrders
 	})
 
+	const {
+		data: products = []
+	} = useQuery({
+		queryKey: ["products"],
+		queryFn: fetchProducts
+	})
+
 	const queryClient = useQueryClient()
 
 	const updateStatusMutation = useMutation({
@@ -78,14 +118,192 @@ const Orders = () => {
 		}
 	})
 
+	const createOrderMutation = useMutation({
+		mutationFn: createOrder,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["orders"] })
+
+			setCustomer("")
+			setSelectedProductId("")
+			setQuantity(1)
+			setOrderItems([])
+		}
+	})
+
 	const searchOrders = items.filter(
 		item =>
 			item.customer.toLowerCase().includes(search.toLowerCase()) &&
 			(selected === "All" || item.status === selected)
 	)
 
+	const selectedProduct = products.find(product => product._id === selectedProductId)
+
+	const amount = orderItems.reduce(
+		(sum, item) => sum + item.price * item.quantity,
+		0
+	)
+
+	const formatDate = (date: string) => {
+		return new Date(date).toLocaleString("ru-RU", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit"
+		})
+	}
+
+	const handleCreateOrder = () => {
+		if (!customer.trim()) return
+		if (orderItems.length === 0) return
+
+		const newOrder = {
+			customer: customer.trim(),
+			amount,
+			status: "Pending" as OrderStatus,
+			items: orderItems
+		}
+
+		createOrderMutation.mutate(newOrder)
+	}
+
+	const handleAddItem = () => {
+		if (!selectedProduct) return
+
+		const existingItem = orderItems.find(
+			item => item.productId === selectedProduct._id
+		)
+
+		if (existingItem) {
+			setOrderItems(prevItems =>
+				prevItems.map(item =>
+					item.productId === selectedProduct._id
+						? {
+							...item,
+							quantity: item.quantity + quantity
+						}
+						: item
+				)
+			)
+
+			return
+		}
+
+		const newItem: OrderItem = {
+			productId: selectedProduct._id,
+			name: selectedProduct.name,
+			quantity,
+			price: selectedProduct.price
+		}
+
+		setOrderItems(prevItems => [
+			...prevItems,
+			newItem
+		])
+	}
+
+	const handleRemoveItem = (productId: string) => {
+		setOrderItems(prevItems =>
+			prevItems.filter(item => item.productId !== productId)
+		)
+	}
+
 	return (
 		<div className={styles.page}>
+			<div className={styles.addOrderCard}>
+				<h3>Create order</h3>
+
+				<div className={styles.orderForm}>
+					<input
+						value={customer}
+						onChange={e => setCustomer(e.target.value)}
+						placeholder="Customer name"
+					/>
+
+					<select
+						value={selectedProductId}
+						onChange={e => setSelectedProductId(e.target.value)}
+					>
+						<option value="">Select product</option>
+
+						{products.map(product => (
+							<option
+								key={product._id}
+								value={product._id}
+							>
+								{product.name}
+							</option>
+						))}
+					</select>
+					<button
+						type="button"
+						onClick={handleAddItem}
+						disabled={!selectedProduct}
+					>
+						Add item
+					</button>
+					<input
+						type="number"
+						min={1}
+						value={quantity}
+						onChange={e => {
+							const value = Number(e.target.value)
+							setQuantity(value < 1 ? 1 : value)
+						}}
+					/>
+
+					<div className={styles.orderAmount}>
+						{amount.toLocaleString("ru-RU")} ₽
+					</div>
+
+					<button
+						onClick={handleCreateOrder}
+						disabled={
+							createOrderMutation.isPending ||
+							!customer.trim() ||
+							orderItems.length === 0
+						}
+					>
+						{createOrderMutation.isPending
+							? "Creating..."
+							: "Create order"}
+					</button>
+				</div>
+				{orderItems.length > 0 && (
+					<div className={styles.orderItems}>
+						{orderItems.map(item => (
+							<div
+								key={item.productId}
+								className={styles.orderItem}
+							>
+								<div>
+									<div className={styles.orderItemName}>
+										{item.name}
+									</div>
+
+									<div className={styles.orderItemMeta}>
+										{item.quantity} ×{" "}
+										{item.price.toLocaleString("ru-RU")} ₽
+									</div>
+								</div>
+
+								<button
+									type="button"
+									className={styles.removeItemButton}
+									onClick={() => handleRemoveItem(item.productId)}
+								>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+				)}
+				{createOrderMutation.error && (
+					<p className={styles.createError}>
+						Failed to create order
+					</p>
+				)}
+			</div>
 			<div className={styles.toolbar}>
 				<input
 					className={styles.input}
@@ -139,7 +357,7 @@ const Orders = () => {
 
 										<td>{item.customer}</td>
 
-										<td>{item.date}</td>
+										<td>{formatDate(item.date)}</td>
 
 										<td>
 											{item.amount.toLocaleString("ru-RU")} ₽
@@ -202,7 +420,7 @@ const Orders = () => {
 									<div className={styles.drawerMeta}>
 										<div className={styles.metaItem}>
 											<span>Date</span>
-											<strong>{selectedOrder.date}</strong>
+											<strong>{formatDate(selectedOrder.date)}</strong>
 										</div>
 
 										<div className={styles.metaItem}>

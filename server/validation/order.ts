@@ -8,9 +8,7 @@ const orderItemSchema = z.object({
 })
 
 export const orderCreateSchema = z.object({
-	orderNumber: z.number().min(1, "Order number must be greater than 0"),
 	customer: z.string().trim().min(1, "Customer is required"),
-	date: z.string().trim().min(1, "Date is required"),
 	amount: z.number().min(0, "Amount cannot be negative"),
 	status: z.enum(["Paid", "Pending", "Cancelled"]),
 	items: z.array(orderItemSchema).min(1, "Order must contain at least one item")
