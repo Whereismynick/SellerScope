@@ -1,0 +1,107 @@
+.addOrderCard {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 20px;
+	margin-bottom: 20px;
+}
+
+.addOrderCard h3 {
+	margin: 0 0 16px;
+	font-size: 18px;
+	color: #0f172a;
+}
+
+.orderForm {
+	display: grid;
+	grid-template-columns: 2fr 2fr 100px 140px auto;
+	gap: 12px;
+	align-items: center;
+}
+
+.orderForm input,
+.orderForm select {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+}
+
+.orderForm button {
+	padding: 10px 16px;
+	border: none;
+	border-radius: 8px;
+	background: #6366f1;
+	color: #ffffff;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.orderForm button:hover {
+	background: #4f46e5;
+}
+
+.orderForm button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.orderAmount {
+	font-weight: 600;
+	color: #0f172a;
+	white-space: nowrap;
+}
+
+.createError {
+	margin: 12px 0 0;
+	color: #dc2626;
+	font-size: 13px;
+}
+
+.orderItems {
+	margin-top: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.orderItem {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	background: #f8fafc;
+}
+
+.orderItemName {
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.orderItemMeta {
+	margin-top: 2px;
+	font-size: 13px;
+	color: #64748b;
+}
+
+.removeItemButton {
+	border: none;
+	background: transparent;
+	color: #dc2626;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+@media (max-width: 640px) {
+	.orderForm {
+		grid-template-columns: 1fr;
+	}
+
+	.orderAmount {
+		padding: 4px 0;
+	}
+}

@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Order, OrderStatus, OrderItem } from "../types/order"
 import { apiClient } from "../api/apiClient"
 import type { Product } from "../types/product"
+import OrderCreateForm from "../components/OrderCreateForm/OrderCreateForm"
+import OrderDetailsDrawer from "../components/OrderDetailsDrawer/OrderDetailsDrawer"
 
 type UpdateOrderStatus = {
 	id: string
@@ -210,100 +212,22 @@ const Orders = () => {
 
 	return (
 		<div className={styles.page}>
-			<div className={styles.addOrderCard}>
-				<h3>Create order</h3>
-
-				<div className={styles.orderForm}>
-					<input
-						value={customer}
-						onChange={e => setCustomer(e.target.value)}
-						placeholder="Customer name"
-					/>
-
-					<select
-						value={selectedProductId}
-						onChange={e => setSelectedProductId(e.target.value)}
-					>
-						<option value="">Select product</option>
-
-						{products.map(product => (
-							<option
-								key={product._id}
-								value={product._id}
-							>
-								{product.name}
-							</option>
-						))}
-					</select>
-					<button
-						type="button"
-						onClick={handleAddItem}
-						disabled={!selectedProduct}
-					>
-						Add item
-					</button>
-					<input
-						type="number"
-						min={1}
-						value={quantity}
-						onChange={e => {
-							const value = Number(e.target.value)
-							setQuantity(value < 1 ? 1 : value)
-						}}
-					/>
-
-					<div className={styles.orderAmount}>
-						{amount.toLocaleString("ru-RU")} ₽
-					</div>
-
-					<button
-						onClick={handleCreateOrder}
-						disabled={
-							createOrderMutation.isPending ||
-							!customer.trim() ||
-							orderItems.length === 0
-						}
-					>
-						{createOrderMutation.isPending
-							? "Creating..."
-							: "Create order"}
-					</button>
-				</div>
-				{orderItems.length > 0 && (
-					<div className={styles.orderItems}>
-						{orderItems.map(item => (
-							<div
-								key={item.productId}
-								className={styles.orderItem}
-							>
-								<div>
-									<div className={styles.orderItemName}>
-										{item.name}
-									</div>
-
-									<div className={styles.orderItemMeta}>
-										{item.quantity} ×{" "}
-										{item.price.toLocaleString("ru-RU")} ₽
-									</div>
-								</div>
-
-								<button
-									type="button"
-									className={styles.removeItemButton}
-									onClick={() => handleRemoveItem(item.productId)}
-								>
-									Remove
-								</button>
-							</div>
-						))}
-					</div>
-				)}
-				{createOrderMutation.error && (
-					<p className={styles.createError}>
-						Failed to create order
-					</p>
-				)}
-			</div>
+			<OrderCreateForm
+				customer={customer}
+				selectedProductId={selectedProductId}
+				quantity={quantity}
+				orderItems={orderItems}
+				products={products}
+				amount={amount}
+				isCreating={createOrderMutation.isPending}
+				hasError={!!createOrderMutation.error}
+				onCustomerChange={setCustomer}
+				onProductChange={setSelectedProductId}
+				onQuantityChange={setQuantity}
+				onAddItem={handleAddItem}
+				onRemoveItem={handleRemoveItem}
+				onCreateOrder={handleCreateOrder}
+			/>
 			<div className={styles.toolbar}>
 				<input
 					className={styles.input}
@@ -386,114 +310,19 @@ const Orders = () => {
 						</table>
 
 						{selectedOrder && (
-							<>
-								<div
-									className={styles.drawerOverlay}
-									onClick={() => setSelectedOrder(null)}
-								/>
-
-								<aside className={styles.drawer}>
-									<div className={styles.drawerHeader}>
-										<div>
-											<p className={styles.drawerEyebrow}>
-												Order details
-											</p>
-
-											<h2>
-												Order #{selectedOrder.orderNumber}
-											</h2>
-
-											<p className={styles.drawerCustomer}>
-												{selectedOrder.customer}
-											</p>
-										</div>
-
-										<button
-											type="button"
-											className={styles.closeButton}
-											onClick={() => setSelectedOrder(null)}
-										>
-											×
-										</button>
-									</div>
-
-									<div className={styles.drawerMeta}>
-										<div className={styles.metaItem}>
-											<span>Date</span>
-											<strong>{formatDate(selectedOrder.date)}</strong>
-										</div>
-
-										<div className={styles.metaItem}>
-											<span>Total</span>
-
-											<strong>
-												{selectedOrder.amount.toLocaleString("ru-RU")} ₽
-											</strong>
-										</div>
-
-										<div className={styles.metaItem}>
-											<span>Status</span>
-
-											<select
-												value={selectedOrder.status}
-												onChange={e =>
-													updateStatusMutation.mutate({
-														id: selectedOrder._id,
-														status: e.target.value as OrderStatus
-													})
-												}
-												disabled={updateStatusMutation.isPending}
-											>
-												<option value="Paid">Paid</option>
-												<option value="Pending">Pending</option>
-												<option value="Cancelled">Cancelled</option>
-											</select>
-										</div>
-									</div>
-
-									{updateStatusMutation.isPending && (
-										<p className={styles.savingText}>
-											Saving...
-										</p>
-									)}
-
-									{updateStatusMutation.error && (
-										<p className={styles.updateError}>
-											Failed to update order status
-										</p>
-									)}
-
-									<div className={styles.itemsSection}>
-										<h3>Items</h3>
-
-										<div className={styles.itemsList}>
-											{selectedOrder.items.map(item => (
-												<div
-													key={item.productId}
-													className={styles.itemRow}
-												>
-													<div>
-														<p className={styles.itemName}>
-															{item.name}
-														</p>
-
-														<p className={styles.itemMeta}>
-															{item.quantity} ×{" "}
-															{item.price.toLocaleString("ru-RU")} ₽
-														</p>
-													</div>
-
-													<strong>
-														{(
-															item.price * item.quantity
-														).toLocaleString("ru-RU")} ₽
-													</strong>
-												</div>
-											))}
-										</div>
-									</div>
-								</aside>
-							</>
+							<OrderDetailsDrawer
+								order={selectedOrder}
+								isUpdating={updateStatusMutation.isPending}
+								hasError={!!updateStatusMutation.error}
+								onClose={() => setSelectedOrder(null)}
+								onStatusChange={status =>
+									updateStatusMutation.mutate({
+										id: selectedOrder._id,
+										status
+									})
+								}
+								formatDate={formatDate}
+							/>
 						)}
 					</>
 				)}
