@@ -60,3 +60,17 @@
   color: #b91c1c;
   background: #fee2e2;
 }
+
+@media (max-width: 640px) {
+	.card {
+		padding: 16px;
+	}
+
+	.row {
+		gap: 16px;
+	}
+
+	.title {
+		font-size: 20px;
+	}
+}

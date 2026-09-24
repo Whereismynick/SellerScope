@@ -56,3 +56,28 @@
   background: #f8fafc;
   color: #0f172a;
 }
+
+@media (max-width: 640px) {
+	.header {
+		height: auto;
+		padding: 16px;
+		gap: 12px;
+		align-items: flex-start;
+	}
+
+	.title {
+		font-size: 20px;
+	}
+
+	.userBlock {
+		gap: 8px;
+	}
+
+	.user {
+		display: none;
+	}
+
+	.logoutButton {
+		margin-left: 0;
+	}
+}

@@ -71,3 +71,14 @@
 	font-size: 14px;
 	font-weight: 600;
 }
+
+@media (max-width: 640px) {
+	.form {
+		padding: 16px;
+		gap: 16px;
+	}
+
+	.button {
+		width: 100%;
+	}
+}

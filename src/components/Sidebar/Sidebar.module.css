@@ -35,3 +35,25 @@
   color: #F8FAFC;
   background: #6366F1;
 }
+
+@media (max-width: 1024px) {
+	.sidebar {
+		width: 100%;
+		padding: 16px;
+	}
+
+	.logo {
+		padding: 0 0 16px;
+	}
+
+	.nav {
+		flex-direction: row;
+		overflow-x: auto;
+		gap: 6px;
+	}
+
+	.navLink {
+		flex-shrink: 0;
+		padding: 10px 12px;
+	}
+}

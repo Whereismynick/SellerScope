@@ -15,7 +15,7 @@ import { UserModel } from "./models/User"
 import { loginSchema, registerSchema } from "./validation/auth"
 import jwt from "jsonwebtoken"
 import { authMiddleware } from "./middleware/auth"
-import { settingsSchema, settingsUpdateSchema } from "./validation/settings"
+import { settingsUpdateSchema } from "./validation/settings"
 
 const app = express()
 const PORT = 3001

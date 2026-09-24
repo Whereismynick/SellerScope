@@ -1,27 +1,32 @@
 .page {
-  width: 100%
+	width: 100%;
 }
 
 .toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
 }
 
 .input {
-  padding: 12px 14px;
+	flex: 1;
+	padding: 12px 14px;
 	border: 1px solid #e2e8f0;
 	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
 }
 
 .select {
-  padding: 12px 14px;
+	padding: 12px 14px;
 	border: 1px solid #e2e8f0;
 	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
 }
 
 .tableCard {
-	background: white;
+	background: #ffffff;
 	border: 1px solid #e2e8f0;
 	border-radius: 12px;
 	overflow: hidden;
@@ -33,54 +38,118 @@
 }
 
 .table th {
-	color: #64748b;
-	text-align: left;
 	padding: 16px;
+	text-align: left;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 600;
 }
 
 .table td {
 	padding: 16px;
 	border-bottom: 1px solid #e2e8f0;
+	color: #0f172a;
 }
 
 .table tbody tr:last-child td {
 	border-bottom: none;
 }
 
+.table tbody tr:hover {
+	background: #f8fafc;
+}
+
+.table td:last-child {
+	white-space: nowrap;
+}
+
+.table td:last-child button {
+	padding: 8px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		opacity 0.15s ease;
+}
+
+.table td:last-child button + button {
+	margin-left: 8px;
+}
+
+.table td:last-child button:hover {
+	background: #f8fafc;
+	border-color: #94a3b8;
+}
+
+.table td:last-child button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.table td:last-child button:last-child {
+	color: #b91c1c;
+	border-color: #fecaca;
+}
+
+.table td:last-child button:last-child:hover {
+	background: #fef2f2;
+	border-color: #fca5a5;
+}
+.table td:first-child a {
+	color: #0f172a;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.table td:first-child a:hover {
+	color: #6366f1;
+}
+.table td:first-child a:focus-visible {
+	outline: 2px solid #6366f1;
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
 .status {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .active {
-  color: #15803d;
-  background: #dcfce7;
+	color: #15803d;
+	background: #dcfce7;
 }
 
 .lowStock {
-  color: #a16207;
-  background: #fef3c7;
+	color: #a16207;
+	background: #fef3c7;
 }
 
 .outOfStock {
-  color: #b91c1c;
-  background: #fee2e2;
+	color: #b91c1c;
+	background: #fee2e2;
 }
 
 .addProductCard {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 20px;
+	margin-bottom: 20px;
 }
 
 .addProductCard h3 {
-  margin: 0 0 16px;
-  font-size: 18px;
+	margin: 0 0 16px;
+	font-size: 18px;
+	color: #0f172a;
 }
 
 .addProductCard form {
@@ -92,19 +161,30 @@
 
 .addProductCard input,
 .addProductCard select {
+	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid #cbd5e1;
 	border-radius: 8px;
+	background: #ffffff;
+	color: #0f172a;
 	font-size: 14px;
 }
 
 .addProductCard button {
 	padding: 10px 16px;
-	border: 0;
+	border: none;
 	border-radius: 8px;
 	background: #6366f1;
-	color: white;
+	color: #ffffff;
+	font-weight: 600;
 	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		opacity 0.15s ease;
+}
+
+.addProductCard button:hover {
+	background: #4f46e5;
 }
 
 .addProductCard button:disabled {
@@ -134,4 +214,58 @@
 	margin: 12px 0 0;
 	font-size: 13px;
 	color: #dc2626;
+}
+
+@media (max-width: 1024px) {
+	.addProductCard form {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.addProductCard button {
+		width: 100%;
+	}
+
+	.toolbar {
+		flex-wrap: wrap;
+	}
+
+	.input {
+		flex: 1 1 280px;
+	}
+
+	.select {
+		flex: 0 0 auto;
+	}
+
+	.tableCard {
+		overflow-x: auto;
+	}
+
+	.table {
+		min-width: 760px;
+	}
+}
+
+@media (max-width: 640px) {
+	.addProductCard {
+		padding: 16px;
+	}
+
+	.addProductCard form {
+		grid-template-columns: 1fr;
+	}
+
+	.toolbar {
+		flex-direction: column;
+	}
+
+	.input,
+	.select {
+		width: 100%;
+		flex: none;
+	}
+
+	.table {
+		min-width: 720px;
+	}
 }

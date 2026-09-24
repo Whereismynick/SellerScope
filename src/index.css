@@ -35,8 +35,18 @@ img {
 }
 
 .content {
-  flex: 1;
-  padding: 32px;
-  color: #0F172A;
+	flex: 1;
+	min-width: 0;
+	padding: 32px;
+	color: #0F172A;
 }
 
+@media (max-width: 1024px) {
+	.layout {
+		flex-direction: column;
+	}
+
+	.content {
+		padding: 20px;
+	}
+}

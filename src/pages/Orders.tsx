@@ -171,6 +171,7 @@ const Orders = () => {
 
 	const handleAddItem = () => {
 		if (!selectedProduct) return
+		if (quantity < 1) return
 
 		const existingItem = orderItems.find(
 			item => item.productId === selectedProduct._id

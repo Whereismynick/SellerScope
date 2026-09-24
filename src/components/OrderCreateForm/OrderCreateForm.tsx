@@ -74,10 +74,16 @@ const OrderCreateForm = ({
 				<input
 					type="number"
 					min={1}
-					value={quantity}
+					value={quantity === 0 ? "" : quantity}
 					onChange={e => {
-						const value = Number(e.target.value)
-						onQuantityChange(value < 1 ? 1 : value)
+						const value = e.target.value
+
+						if (value === "") {
+							onQuantityChange(0)
+							return
+						}
+
+						onQuantityChange(Number(value))
 					}}
 				/>
 
