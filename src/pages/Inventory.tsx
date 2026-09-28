@@ -12,7 +12,6 @@ type UpdateInventoryItem = {
 	id: string
 	data: {
 		stock: number
-		reserved: number
 	}
 }
 
@@ -38,9 +37,10 @@ const Inventory = () => {
 	const [search, setSearch] = useState("")
 	const [onlyLowStock, setOnlyLowStock] = useState(false)
 
-	const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
+	const [editingItem, setEditingItem] =
+		useState<InventoryItem | null>(null)
+
 	const [stock, setStock] = useState(0)
-	const [reserved, setReserved] = useState(0)
 	const [editError, setEditError] = useState("")
 
 	const queryClient = useQueryClient()
@@ -57,8 +57,16 @@ const Inventory = () => {
 
 	const updateInventoryMutation = useMutation({
 		mutationFn: updateInventoryItem,
+
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["inventory"] })
+			queryClient.invalidateQueries({
+				queryKey: ["inventory"]
+			})
+
+			queryClient.invalidateQueries({
+				queryKey: ["products"]
+			})
+
 			setEditingItem(null)
 			setEditError("")
 		}
@@ -67,7 +75,6 @@ const Inventory = () => {
 	const handleEdit = (item: InventoryItem) => {
 		setEditingItem(item)
 		setStock(item.stock)
-		setReserved(item.reserved)
 		setEditError("")
 	}
 
@@ -79,13 +86,15 @@ const Inventory = () => {
 	const handleSave = () => {
 		if (!editingItem) return
 
-		if (stock < 0 || reserved < 0) {
-			setEditError("Stock and reserved cannot be negative")
+		if (stock < 0) {
+			setEditError("Stock cannot be negative")
 			return
 		}
 
-		if (reserved > stock) {
-			setEditError("Reserved cannot be greater than stock")
+		if (stock < editingItem.reserved) {
+			setEditError(
+				"Stock cannot be lower than reserved quantity"
+			)
 			return
 		}
 
@@ -94,18 +103,24 @@ const Inventory = () => {
 		updateInventoryMutation.mutate({
 			id: editingItem._id,
 			data: {
-				stock,
-				reserved
+				stock
 			}
 		})
 	}
 
 	const filteredInventory = items.filter(item =>
 		(
-			item.name.toLowerCase().includes(search.toLowerCase()) ||
-			item.sku.toLowerCase().includes(search.toLowerCase())
+			item.name
+				.toLowerCase()
+				.includes(search.toLowerCase()) ||
+			item.sku
+				.toLowerCase()
+				.includes(search.toLowerCase())
 		) &&
-		(!onlyLowStock || item.stock - item.reserved < 10)
+		(
+			!onlyLowStock ||
+			item.stock - item.reserved < 10
+		)
 	)
 
 	return (
@@ -114,7 +129,9 @@ const Inventory = () => {
 				<input
 					className={styles.search}
 					value={search}
-					onChange={e => setSearch(e.target.value)}
+					onChange={e =>
+						setSearch(e.target.value)
+					}
 					placeholder="Search products or SKU..."
 				/>
 
@@ -122,8 +139,13 @@ const Inventory = () => {
 					<input
 						type="checkbox"
 						checked={onlyLowStock}
-						onChange={e => setOnlyLowStock(e.target.checked)}
+						onChange={e =>
+							setOnlyLowStock(
+								e.target.checked
+							)
+						}
 					/>
+
 					Low stock only
 				</label>
 			</div>
@@ -134,7 +156,10 @@ const Inventory = () => {
 				) : error ? (
 					<div>
 						<p>{error.message}</p>
-						<button onClick={() => refetch()}>
+
+						<button
+							onClick={() => refetch()}
+						>
 							Retry
 						</button>
 					</div>
@@ -156,27 +181,46 @@ const Inventory = () => {
 
 						<tbody>
 							{filteredInventory.map(item => {
-								const isEditing = editingItem?._id === item._id
+								const isEditing =
+									editingItem?._id ===
+									item._id
 
-								const currentAvailable = isEditing
-									? stock - reserved
-									: item.stock - item.reserved
+								const currentAvailable =
+									isEditing
+										? stock -
+											item.reserved
+										: item.stock -
+											item.reserved
 
 								return (
 									<tr key={item._id}>
-										<td>{item.name}</td>
+										<td>
+											{item.name}
+										</td>
 
-										<td>{item.sku}</td>
+										<td>
+											{item.sku}
+										</td>
 
 										<td>
 											{isEditing ? (
 												<input
-													className={styles.numberInput}
+													className={
+														styles.numberInput
+													}
 													type="number"
-													value={stock}
+													value={
+														stock
+													}
 													min={0}
 													onChange={e =>
-														setStock(Number(e.target.value))
+														setStock(
+															Number(
+																e
+																	.target
+																	.value
+															)
+														)
 													}
 												/>
 											) : (
@@ -185,32 +229,26 @@ const Inventory = () => {
 										</td>
 
 										<td>
-											{isEditing ? (
-												<input
-													className={styles.numberInput}
-													type="number"
-													value={reserved}
-													min={0}
-													onChange={e =>
-														setReserved(Number(e.target.value))
-													}
-												/>
-											) : (
-												item.reserved
-											)}
+											{item.reserved}
 										</td>
 
-										<td>{currentAvailable}</td>
+										<td>
+											{
+												currentAvailable
+											}
+										</td>
 
 										<td>
 											<span
 												className={`${styles.status} ${
-													currentAvailable < 10
+													currentAvailable <
+													10
 														? styles.lowStock
 														: styles.inStock
 												}`}
 											>
-												{currentAvailable < 10
+												{currentAvailable <
+												10
 													? "Low Stock"
 													: "In Stock"}
 											</span>
@@ -218,11 +256,21 @@ const Inventory = () => {
 
 										<td>
 											{isEditing ? (
-												<div className={styles.actions}>
+												<div
+													className={
+														styles.actions
+													}
+												>
 													<button
-														className={styles.saveButton}
-														onClick={handleSave}
-														disabled={updateInventoryMutation.isPending}
+														className={
+															styles.saveButton
+														}
+														onClick={
+															handleSave
+														}
+														disabled={
+															updateInventoryMutation.isPending
+														}
 													>
 														{updateInventoryMutation.isPending
 															? "Saving..."
@@ -230,29 +278,54 @@ const Inventory = () => {
 													</button>
 
 													<button
-														className={styles.cancelButton}
-														onClick={handleCancel}
-														disabled={updateInventoryMutation.isPending}
+														className={
+															styles.cancelButton
+														}
+														onClick={
+															handleCancel
+														}
+														disabled={
+															updateInventoryMutation.isPending
+														}
 													>
 														Cancel
 													</button>
 
 													{editError && (
-														<p className={styles.editError}>
-															{editError}
+														<p
+															className={
+																styles.editError
+															}
+														>
+															{
+																editError
+															}
 														</p>
 													)}
 
 													{updateInventoryMutation.error && (
-														<p className={styles.editError}>
-															Failed to update inventory
+														<p
+															className={
+																styles.editError
+															}
+														>
+															Failed
+															to
+															update
+															inventory
 														</p>
 													)}
 												</div>
 											) : (
 												<button
-													className={styles.editButton}
-													onClick={() => handleEdit(item)}
+													className={
+														styles.editButton
+													}
+													onClick={() =>
+														handleEdit(
+															item
+														)
+													}
 												>
 													Edit
 												</button>

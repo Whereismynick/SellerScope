@@ -5,6 +5,7 @@ export type InventoryItem = {
 	sku: string
 	stock: number
 	reserved: number
+	productId: string
 }
 
 const InventoryItemSchema = new Schema(
@@ -17,6 +18,12 @@ const InventoryItemSchema = new Schema(
 		userId: {
 			type: Schema.Types.ObjectId,
 			ref: "User",
+			required: true,
+			index: true
+		},
+		productId: {
+			type: Schema.Types.ObjectId,
+			ref: "Product",
 			required: true,
 			index: true
 		},
