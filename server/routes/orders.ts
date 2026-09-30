@@ -29,6 +29,7 @@ router.post("/", async (req, res, next) => {
 			orderCreateSchema.parse(req.body)
 
 		const inventories = []
+		const orderItems = []
 
 		for (const item of validateData.items) {
 			const inventory =
@@ -44,9 +45,19 @@ router.post("/", async (req, res, next) => {
 				})
 			}
 
+			const product = await ProductModel.findOne({
+				_id: item.productId,
+				userId: req.userId
+			})
+
+			if (!product) {
+				return res.status(404).json({
+					message: `Product not found ${item.productId}`
+				})
+			}
+
 			const available =
-				inventory.stock -
-				inventory.reserved
+				inventory.stock - inventory.reserved
 
 			if (item.quantity > available) {
 				return res.status(400).json({
@@ -59,13 +70,48 @@ router.post("/", async (req, res, next) => {
 				inventory,
 				quantity: item.quantity
 			})
+
+			orderItems.push({
+				productId: product._id,
+				name: product.name,
+				quantity: item.quantity,
+				price: product.price
+			})
 		}
 
+		const amount = orderItems.reduce(
+			(total, item) =>
+				total + item.price * item.quantity,
+			0
+		)
+
 		for (const item of inventories) {
-			item.inventory.reserved +=
-				item.quantity
+			if (validateData.status === "Pending") {
+				item.inventory.reserved +=
+					item.quantity
+			}
+
+			if (validateData.status === "Paid") {
+				item.inventory.stock -=
+					item.quantity
+			}
 
 			await item.inventory.save()
+
+			if (validateData.status === "Paid") {
+				await ProductModel.findOneAndUpdate(
+					{
+						_id: item.inventory.productId,
+						userId: req.userId
+					},
+					{
+						stock: item.inventory.stock
+					},
+					{
+						runValidators: true
+					}
+				)
+			}
 		}
 
 		const lastOrder = await OrderModel
@@ -81,7 +127,10 @@ router.post("/", async (req, res, next) => {
 			: 1
 
 		const order = await OrderModel.create({
-			...validateData,
+			customer: validateData.customer,
+			status: validateData.status,
+			items: orderItems,
+			amount,
 			date: new Date().toISOString(),
 			orderNumber,
 			userId: req.userId
@@ -99,12 +148,6 @@ router.patch("/:id", async (req, res, next) => {
 			orderUpdateSchema.parse(req.body)
 
 		const newStatus = validateData.status
-
-		if (!newStatus) {
-			return res.status(400).json({
-				message: "Order status is required"
-			})
-		}
 
 		const order = await OrderModel.findOne({
 			_id: req.params.id,

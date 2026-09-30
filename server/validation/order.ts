@@ -2,16 +2,41 @@ import { z } from "zod"
 
 const orderItemSchema = z.object({
 	productId: z.string().trim().min(1, "Product id is required"),
-	name: z.string().trim().min(1, "Product name is required"),
-	quantity: z.number().min(1, "Quantity must be at least 1"),
-	price: z.number().min(0, "Price cannot be negative")
+	quantity: z.number().min(1, "Quantity must be at least 1")
+
 })
 
 export const orderCreateSchema = z.object({
-	customer: z.string().trim().min(1, "Customer is required"),
-	amount: z.number().min(0, "Amount cannot be negative"),
-	status: z.enum(["Paid", "Pending", "Cancelled"]),
-	items: z.array(orderItemSchema).min(1, "Order must contain at least one item")
+	customer: z
+		.string()
+		.trim()
+		.min(1, "Customer is required"),
+
+	status: z.enum([
+		"Paid",
+		"Pending",
+		"Cancelled"
+	]),
+
+	items: z
+		.array(orderItemSchema)
+		.min(1, "Order must contain at least one item")
+		.refine(
+			items =>
+				new Set(
+					items.map(item => item.productId)
+				).size === items.length,
+			{
+				message:
+					"Duplicate products are not allowed"
+			}
+		)
 })
 
-export const orderUpdateSchema = orderCreateSchema.partial()
+export const orderUpdateSchema = z.object({
+	status: z.enum([
+		"Paid",
+		"Pending",
+		"Cancelled"
+	])
+})

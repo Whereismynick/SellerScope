@@ -32,13 +32,10 @@ const fetchOrders = async (): Promise<Order[]> => {
 
 type CreateOrderData = {
 	customer: string
-	amount: number
 	status: OrderStatus
 	items: {
 		productId: string
-		name: string
 		quantity: number
-		price: number
 	}[]
 }
 
@@ -161,9 +158,11 @@ const Orders = () => {
 
 		const newOrder = {
 			customer: customer.trim(),
-			amount,
 			status: "Pending" as OrderStatus,
-			items: orderItems
+			items: orderItems.map(item => ({
+				productId: item.productId,
+				quantity: item.quantity
+			}))
 		}
 
 		createOrderMutation.mutate(newOrder)
@@ -260,7 +259,15 @@ const Orders = () => {
 						</button>
 					</div>
 				) : searchOrders.length === 0 ? (
-					<p>No orders found</p>
+					<div className={styles.emptyState}>
+						<p className={styles.emptyTitle}>
+							No orders found
+						</p>
+
+						<p className={styles.emptyText}>
+							Create your first order to see it here.
+						</p>
+					</div>
 				) : (
 					<>
 						<table className={styles.table}>

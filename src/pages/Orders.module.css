@@ -110,6 +110,24 @@
 	outline-offset: 2px;
 }
 
+.emptyState {
+	padding: 48px 24px;
+	text-align: center;
+}
+
+.emptyTitle {
+	margin: 0 0 8px;
+	font-size: 18px;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.emptyText {
+	margin: 0;
+	font-size: 14px;
+	color: #64748b;
+}
+
 @media (max-width: 640px) {
 	.toolbar {
 		flex-direction: column;

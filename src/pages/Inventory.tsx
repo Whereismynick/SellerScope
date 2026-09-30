@@ -164,7 +164,15 @@ const Inventory = () => {
 						</button>
 					</div>
 				) : filteredInventory.length === 0 ? (
-					<p>No inventory found</p>
+					<div className={styles.emptyState}>
+						<p className={styles.emptyTitle}>
+							No inventory items found
+						</p>
+
+						<p className={styles.emptyText}>
+							Add a product to start tracking stock.
+						</p>
+					</div>
 				) : (
 					<table className={styles.table}>
 						<thead>
@@ -188,9 +196,9 @@ const Inventory = () => {
 								const currentAvailable =
 									isEditing
 										? stock -
-											item.reserved
+										item.reserved
 										: item.stock -
-											item.reserved
+										item.reserved
 
 								return (
 									<tr key={item._id}>
@@ -205,23 +213,20 @@ const Inventory = () => {
 										<td>
 											{isEditing ? (
 												<input
-													className={
-														styles.numberInput
-													}
+													className={styles.numberInput}
 													type="number"
-													value={
-														stock
-													}
+													value={stock === 0 ? "" : stock}
 													min={0}
-													onChange={e =>
-														setStock(
-															Number(
-																e
-																	.target
-																	.value
-															)
-														)
-													}
+													onChange={e => {
+														const value = e.target.value
+
+														if (value === "") {
+															setStock(0)
+															return
+														}
+
+														setStock(Number(value))
+													}}
 												/>
 											) : (
 												item.stock
@@ -240,15 +245,14 @@ const Inventory = () => {
 
 										<td>
 											<span
-												className={`${styles.status} ${
-													currentAvailable <
+												className={`${styles.status} ${currentAvailable <
 													10
-														? styles.lowStock
-														: styles.inStock
-												}`}
+													? styles.lowStock
+													: styles.inStock
+													}`}
 											>
 												{currentAvailable <
-												10
+													10
 													? "Low Stock"
 													: "In Stock"}
 											</span>

@@ -281,7 +281,15 @@ const Products = () => {
 						</button>
 					</div>
 				) : filteredProducts.length === 0 ? (
-					<p>No products found</p>
+					<div className={styles.emptyState}>
+						<p className={styles.emptyTitle}>
+							No products found
+						</p>
+
+						<p className={styles.emptyText}>
+							Add your first product to get started.
+						</p>
+					</div>
 				) : (
 					<table className={styles.table}>
 						<thead>
