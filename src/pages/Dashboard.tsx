@@ -7,6 +7,8 @@ import type { Product } from "../types/product"
 import styles from "./Dashboard.module.css"
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "../api/apiClient"
+import { useAuth } from "../hooks/useAuth"
+import { formatCurrency } from "../utils/formatCurrency"
 
 type GroupedProduct = {
 	product: string
@@ -25,6 +27,8 @@ const fetchOrders = async (): Promise<Order[]> => {
 }
 
 const Dashboard = () => {
+	const { user } = useAuth()
+	const currency = user?.currency ?? "RUB"
 	const {
 		data: products = [],
 		isLoading: productsLoading,
@@ -124,7 +128,7 @@ const Dashboard = () => {
 			<div className={styles.statsGrid}>
 				<StatCard
 					title="Revenue"
-					value={`${revenue.toLocaleString("ru-RU")} ₽`}
+					value={formatCurrency(revenue, currency)}
 				/>
 
 				<StatCard
@@ -143,11 +147,11 @@ const Dashboard = () => {
 				/>
 			</div>
 
-			<RevenueChart orders={orders} />
+			<RevenueChart orders={orders} currency={currency} />
 
 			<div className={styles.bottomGrid}>
-				<TopProducts products={topProducts} />
-				<RecentOrders orders={orders} />
+				<TopProducts products={topProducts} currency={currency} />
+				<RecentOrders orders={orders} currency={currency} />
 			</div>
 		</div>
 	)

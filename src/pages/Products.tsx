@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { apiClient } from "../api/apiClient"
+import { useAuth } from "../hooks/useAuth"
+import { formatCurrency } from "../utils/formatCurrency"
 
 const productSchema = z.object({
 	name: z.string().trim().min(1, "Product name is required"),
@@ -60,6 +62,7 @@ const Products = () => {
 	const [selected, setSelected] = useState("All")
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null)
 	const queryClient = useQueryClient()
+	const { user } = useAuth()
 
 	const getStatusClass = (status: ProductStatus) => {
 		if (status === "Active") return styles.active
@@ -86,8 +89,8 @@ const Products = () => {
 		resolver: zodResolver(productSchema),
 		defaultValues: {
 			name: "",
-			price: 0,
-			stock: 0,
+			price: undefined,
+			stock: undefined,
 			status: "Active"
 		}
 	})
@@ -140,8 +143,8 @@ const Products = () => {
 
 		reset({
 			name: "",
-			price: 0,
-			stock: 0,
+			price: undefined,
+			stock: undefined,
 			status: "Active"
 		})
 	}
@@ -312,7 +315,10 @@ const Products = () => {
 									</td>
 
 									<td>
-										{product.price.toLocaleString("ru-RU")} ₽
+										{formatCurrency(
+											product.price,
+											user?.currency ?? "RUB"
+										)}
 									</td>
 
 									<td>{product.stock}</td>

@@ -14,7 +14,7 @@
 
 .orderForm {
 	display: grid;
-	grid-template-columns: 2fr 2fr 100px 140px auto;
+	grid-template-columns: 1.4fr 2fr auto 140px auto auto;
 	gap: 12px;
 	align-items: center;
 }
@@ -27,20 +27,6 @@
 	border-radius: 8px;
 	background: #ffffff;
 	color: #0f172a;
-}
-
-.orderForm button {
-	padding: 10px 16px;
-	border: none;
-	border-radius: 8px;
-	background: #6366f1;
-	color: #ffffff;
-	font-weight: 600;
-	cursor: pointer;
-}
-
-.orderForm button:hover {
-	background: #4f46e5;
 }
 
 .orderForm button:disabled {
@@ -94,6 +80,35 @@
 	color: #dc2626;
 	cursor: pointer;
 	font-weight: 600;
+}
+
+.addItemButton {
+	padding: 10px 14px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #334155;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.addItemButton:hover {
+	background: #f8fafc;
+}
+
+.createOrderButton {
+	padding: 10px 18px;
+	border: none;
+	border-radius: 8px;
+	background: #6366f1;
+	color: #ffffff;
+	font-weight: 600;
+	cursor: pointer;
+	justify-self: start;
+}
+
+.createOrderButton:hover {
+	background: #4f46e5;
 }
 
 @media (max-width: 640px) {

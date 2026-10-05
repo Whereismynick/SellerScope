@@ -5,6 +5,8 @@ import styles from "./Analytics.module.css"
 import { useQuery } from "@tanstack/react-query"
 import type { Order } from "../types/order"
 import { apiClient } from "../api/apiClient"
+import { useAuth } from "../hooks/useAuth"
+import { formatCurrency } from "../utils/formatCurrency"
 
 const fetchOrders = async (): Promise<Order[]> => {
   const response = await apiClient.get<Order[]>("/orders")
@@ -12,6 +14,8 @@ const fetchOrders = async (): Promise<Order[]> => {
 }
 
 const Analytics = () => {
+  const { user } = useAuth()
+  const currency = user?.currency ?? "RUB"
   const {
     data: orders = [],
     isLoading,
@@ -32,7 +36,10 @@ const Analytics = () => {
       <div className={styles.statsGrid}>
         <StatCard
           title="Average Order Value"
-          value={`${Math.round(averageOrderValue).toLocaleString("ru-RU")} ₽`}
+          value={formatCurrency(
+            Math.round(averageOrderValue),
+            currency
+          )}
         />
 
         <StatCard

@@ -1,3 +1,5 @@
+import type { Currency } from "../../types/auth"
+import { formatCurrency } from "../../utils/formatCurrency"
 import styles from "./TopProducts.module.css"
 type Product = {
 	product: string
@@ -7,10 +9,11 @@ type Product = {
 
 type TopProductsProps = {
 	products: Product[]
+	currency: Currency
 }
 
 
-const TopProducts = ({ products }: TopProductsProps) => {
+const TopProducts = ({ products, currency }: TopProductsProps) => {
 	return (
 		<div className={styles.card}>
 			<h2 className={styles.title}>Top Products</h2>
@@ -29,7 +32,7 @@ const TopProducts = ({ products }: TopProductsProps) => {
 						<tr key={prod.product}>
 							<td>{prod.product}</td>
 							<td>{prod.sales}</td>
-							<td>{prod.revenue.toLocaleString("ru-RU")} ₽</td>
+							<td>{formatCurrency(prod.revenue, currency)}</td>
 						</tr>
 					))}
 				</tbody>

@@ -87,7 +87,8 @@ const Settings = () => {
 
 			updateUser({
 				name: updatedSettings.name,
-				email: updatedSettings.email
+				email: updatedSettings.email,
+				currency: updatedSettings.currency
 			})
 
 			setSaved(true)

@@ -4,4 +4,5 @@ export type InventoryItem = {
 	sku: string
 	stock: number
 	reserved: number
+	productId: string
 }

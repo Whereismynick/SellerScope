@@ -1,11 +1,14 @@
 import styles from "./RecentOrders.module.css"
 import type { Order } from "../../types/order"
+import type { Currency } from "../../types/auth"
+import { formatCurrency } from "../../utils/formatCurrency"
 
 type RecentOrdersProps = {
 	orders: Order[]
+	currency: Currency
 }
 
-const RecentOrders = ({ orders }: RecentOrdersProps) => {
+const RecentOrders = ({ orders, currency }: RecentOrdersProps) => {
 	const recentOrders = [...orders]
 		.sort((a, b) => b.date.localeCompare(a.date))
 		.slice(0, 5)
@@ -29,7 +32,7 @@ const RecentOrders = ({ orders }: RecentOrdersProps) => {
 						<tr key={order._id}>
 							<td>#{order.orderNumber}</td>
 							<td>{order.customer}</td>
-							<td>{order.amount.toLocaleString("ru-RU")} ₽</td>
+							<td>{formatCurrency(order.amount, currency)}</td>
 							<td>
 								<span
 									className={`${styles.status} ${order.status === "Paid"

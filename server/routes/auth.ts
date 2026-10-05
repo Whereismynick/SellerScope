@@ -50,6 +50,7 @@ router.post("/register", async (req, res, next) => {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			currency: user.currency,
 			token
 		})
 	} catch (error) {
@@ -96,6 +97,7 @@ router.post("/login", async (req, res, next) => {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			currency: user.currency,
 			token
 		})
 	} catch (error) {

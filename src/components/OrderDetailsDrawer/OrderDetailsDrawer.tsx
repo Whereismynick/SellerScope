@@ -1,10 +1,13 @@
 import type { Order, OrderStatus } from "../../types/order"
 import styles from "./OrderDetailsDrawer.module.css"
+import type { Currency } from "../../types/auth"
+import { formatCurrency } from "../../utils/formatCurrency"
 
 type OrderDetailsDrawerProps = {
 	order: Order
 	isUpdating: boolean
 	hasError: boolean
+	currency: Currency
 
 	onClose: () => void
 	onStatusChange: (status: OrderStatus) => void
@@ -17,7 +20,8 @@ const OrderDetailsDrawer = ({
 	hasError,
 	onClose,
 	onStatusChange,
-	formatDate
+	formatDate,
+	currency
 }: OrderDetailsDrawerProps) => {
 	return (
 		<>
@@ -59,7 +63,7 @@ const OrderDetailsDrawer = ({
 					<div className={styles.metaItem}>
 						<span>Total</span>
 						<strong>
-							{order.amount.toLocaleString("ru-RU")} ₽
+							{formatCurrency(order.amount, currency)}
 						</strong>
 					</div>
 
@@ -106,14 +110,15 @@ const OrderDetailsDrawer = ({
 
 									<p className={styles.itemMeta}>
 										{item.quantity} ×{" "}
-										{item.price.toLocaleString("ru-RU")} ₽
+										{formatCurrency(item.price, currency)}
 									</p>
 								</div>
 
 								<strong>
-									{(
-										item.price * item.quantity
-									).toLocaleString("ru-RU")} ₽
+									{formatCurrency(
+										item.price * item.quantity,
+										currency
+									)}
 								</strong>
 							</div>
 						))}

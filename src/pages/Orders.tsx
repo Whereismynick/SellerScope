@@ -6,6 +6,9 @@ import { apiClient } from "../api/apiClient"
 import type { Product } from "../types/product"
 import OrderCreateForm from "../components/OrderCreateForm/OrderCreateForm"
 import OrderDetailsDrawer from "../components/OrderDetailsDrawer/OrderDetailsDrawer"
+import type { InventoryItem } from "../types/inventory"
+import { useAuth } from "../hooks/useAuth"
+import { formatCurrency } from "../utils/formatCurrency"
 
 type UpdateOrderStatus = {
 	id: string
@@ -21,6 +24,11 @@ const updateOrderStatus = async ({
 		{ status }
 	)
 
+	return response.data
+}
+
+const fetchInventory = async (): Promise<InventoryItem[]> => {
+	const response = await apiClient.get<InventoryItem[]>("/inventory")
 	return response.data
 }
 
@@ -63,6 +71,9 @@ const Orders = () => {
 	const [selectedProductId, setSelectedProductId] = useState("")
 	const [quantity, setQuantity] = useState(1)
 	const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+	const [addItemError, setAddItemError] = useState("")
+	const { user } = useAuth()
+	const currency = user?.currency ?? "RUB"
 
 	useEffect(() => {
 		if (!selectedOrder) return
@@ -107,6 +118,13 @@ const Orders = () => {
 		queryFn: fetchProducts
 	})
 
+	const {
+		data: inventory = []
+	} = useQuery({
+		queryKey: ["inventory"],
+		queryFn: fetchInventory
+	})
+
 	const queryClient = useQueryClient()
 
 	const updateStatusMutation = useMutation({
@@ -129,6 +147,12 @@ const Orders = () => {
 		}
 	})
 
+	const clearCreateOrderError = () => {
+		if (createOrderMutation.error) {
+			createOrderMutation.reset()
+		}
+	}
+
 	const searchOrders = items.filter(
 		item =>
 			item.customer.toLowerCase().includes(search.toLowerCase()) &&
@@ -136,6 +160,14 @@ const Orders = () => {
 	)
 
 	const selectedProduct = products.find(product => product._id === selectedProductId)
+
+	const selectedInventory = inventory.find(
+		item => item.productId === selectedProductId
+	)
+
+	const available = selectedInventory
+		? selectedInventory.stock - selectedInventory.reserved
+		: 0
 
 	const amount = orderItems.reduce(
 		(sum, item) => sum + item.price * item.quantity,
@@ -169,11 +201,23 @@ const Orders = () => {
 	}
 
 	const handleAddItem = () => {
+		setAddItemError("")
+		createOrderMutation.reset()
+
 		if (!selectedProduct) return
+		if (!selectedInventory) return
 		if (quantity < 1) return
 
+		if (quantity > available) {
+			setAddItemError(
+				`Only ${available} available`
+			)
+			return
+		}
+
 		const existingItem = orderItems.find(
-			item => item.productId === selectedProduct._id
+			item =>
+				item.productId === selectedProduct._id
 		)
 
 		if (existingItem) {
@@ -182,7 +226,7 @@ const Orders = () => {
 					item.productId === selectedProduct._id
 						? {
 							...item,
-							quantity: item.quantity + quantity
+							quantity
 						}
 						: item
 				)
@@ -205,10 +249,14 @@ const Orders = () => {
 	}
 
 	const handleRemoveItem = (productId: string) => {
-		setOrderItems(prevItems =>
-			prevItems.filter(item => item.productId !== productId)
+	clearCreateOrderError()
+	setAddItemError("")
+	setOrderItems(prevItems =>
+		prevItems.filter(
+			item => item.productId !== productId
 		)
-	}
+	)
+}
 
 	return (
 		<div className={styles.page}>
@@ -216,15 +264,28 @@ const Orders = () => {
 				customer={customer}
 				selectedProductId={selectedProductId}
 				quantity={quantity}
+				currency={currency}
 				orderItems={orderItems}
 				products={products}
 				amount={amount}
 				isCreating={createOrderMutation.isPending}
 				hasError={!!createOrderMutation.error}
-				onCustomerChange={setCustomer}
-				onProductChange={setSelectedProductId}
-				onQuantityChange={setQuantity}
+				onCustomerChange={value => {
+					clearCreateOrderError()
+					setCustomer(value)
+				}}
+				onProductChange={value => {
+					clearCreateOrderError()
+					setAddItemError("")
+					setSelectedProductId(value)
+				}}
+				onQuantityChange={value => {
+					clearCreateOrderError()
+					setAddItemError("")
+					setQuantity(value)
+				}}
 				onAddItem={handleAddItem}
+				addItemError={addItemError}
 				onRemoveItem={handleRemoveItem}
 				onCreateOrder={handleCreateOrder}
 			/>
@@ -292,7 +353,7 @@ const Orders = () => {
 										<td>{formatDate(item.date)}</td>
 
 										<td>
-											{item.amount.toLocaleString("ru-RU")} ₽
+											{formatCurrency(item.amount, currency)}
 										</td>
 
 										<td>
@@ -322,6 +383,7 @@ const Orders = () => {
 								order={selectedOrder}
 								isUpdating={updateStatusMutation.isPending}
 								hasError={!!updateStatusMutation.error}
+								currency={currency}
 								onClose={() => setSelectedOrder(null)}
 								onStatusChange={status =>
 									updateStatusMutation.mutate({
