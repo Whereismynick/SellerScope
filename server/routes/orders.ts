@@ -9,6 +9,8 @@ import {
 	orderUpdateSchema
 } from "../validation/order"
 
+import { getProductStatus } from "../utils/getProductStatus"
+
 const router = Router()
 
 router.get("/", async (req, res, next) => {
@@ -52,7 +54,8 @@ router.post("/", async (req, res, next) => {
 
 			if (!product) {
 				return res.status(404).json({
-					message: `Product not found ${item.productId}`
+					message:
+						`Product not found ${item.productId}`
 				})
 			}
 
@@ -105,7 +108,10 @@ router.post("/", async (req, res, next) => {
 						userId: req.userId
 					},
 					{
-						stock: item.inventory.stock
+						stock: item.inventory.stock,
+						status: getProductStatus(
+							item.inventory.stock
+						)
 					},
 					{
 						runValidators: true
@@ -200,7 +206,7 @@ router.patch("/:id", async (req, res, next) => {
 			if (
 				newStatus === "Paid" &&
 				inventory.stock <
-				item.quantity
+					item.quantity
 			) {
 				return res.status(400).json({
 					message:
@@ -237,7 +243,10 @@ router.patch("/:id", async (req, res, next) => {
 						userId: req.userId
 					},
 					{
-						stock: item.inventory.stock
+						stock: item.inventory.stock,
+						status: getProductStatus(
+							item.inventory.stock
+						)
 					},
 					{
 						runValidators: true

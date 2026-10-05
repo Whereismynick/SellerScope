@@ -3,15 +3,19 @@ import { type Product, type ProductStatus } from "../types/product"
 import styles from "./ProductDetails.module.css"
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "../api/apiClient"
+import { useAuth } from "../hooks/useAuth"
+import { formatCurrency } from "../utils/formatCurrency"
 
 
 const fetchProduct = async (id: string): Promise<Product> => {
-		const response = await apiClient.get<Product>(`/products/${id}`)
-		return response.data
-	}
+	const response = await apiClient.get<Product>(`/products/${id}`)
+	return response.data
+}
 
 const ProductDetails = () => {
 	const { id } = useParams()
+	const { user } = useAuth()
+	const currency = user?.currency ?? "RUB"
 	const {
 		data: product,
 		isLoading,
@@ -21,15 +25,15 @@ const ProductDetails = () => {
 		queryFn: () => fetchProduct(id!),
 		enabled: Boolean(id)
 	})
-	if(isLoading){
+	if (isLoading) {
 		return <p>Loading product...</p>
 	}
 
-	if(error){
+	if (error) {
 		return <p>{error.message}</p>
 	}
 
-	if(!product){
+	if (!product) {
 		return <p>Product not found</p>
 	}
 
@@ -38,7 +42,7 @@ const ProductDetails = () => {
 		if (status === "Low Stock") return styles.lowStock
 		return styles.outOfStock
 	}
-	
+
 
 	return (
 		<div className={styles.page}>
@@ -47,7 +51,9 @@ const ProductDetails = () => {
 			<div className={styles.card}>
 				<div className={styles.row}>
 					<span className={styles.label}>Price</span>
-					<span className={styles.value}>{product.price.toLocaleString("ru-RU")} ₽</span>
+					<span className={styles.value}>
+						{formatCurrency(product.price, currency)}
+					</span>
 				</div>
 
 				<div className={styles.row}>

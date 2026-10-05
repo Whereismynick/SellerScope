@@ -17,8 +17,7 @@ import { formatCurrency } from "../utils/formatCurrency"
 const productSchema = z.object({
 	name: z.string().trim().min(1, "Product name is required"),
 	price: z.number().min(1, "Price must be greater than 0"),
-	stock: z.number().min(0, "Stock cannot be negative"),
-	status: z.enum(["Active", "Low Stock", "Out of Stock"])
+	stock: z.number().min(0, "Stock cannot be negative")
 })
 
 type ProductForm = z.infer<typeof productSchema>
@@ -90,8 +89,7 @@ const Products = () => {
 		defaultValues: {
 			name: "",
 			price: undefined,
-			stock: undefined,
-			status: "Active"
+			stock: undefined
 		}
 	})
 
@@ -133,8 +131,7 @@ const Products = () => {
 		reset({
 			name: product.name,
 			price: product.price,
-			stock: product.stock,
-			status: product.status
+			stock: product.stock
 		})
 	}
 
@@ -144,8 +141,7 @@ const Products = () => {
 		reset({
 			name: "",
 			price: undefined,
-			stock: undefined,
-			status: "Active"
+			stock: undefined
 		})
 	}
 
@@ -204,16 +200,6 @@ const Products = () => {
 						/>
 
 						{errors.stock && <p>{errors.stock.message}</p>}
-					</div>
-
-					<div className={styles.formField}>
-						<select {...register("status")}>
-							<option value="Active">Active</option>
-							<option value="Low Stock">Low Stock</option>
-							<option value="Out of Stock">Out of Stock</option>
-						</select>
-
-						{errors.status && <p>{errors.status.message}</p>}
 					</div>
 
 					<button

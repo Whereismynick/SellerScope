@@ -156,7 +156,7 @@
 
 .addProductCard form {
 	display: grid;
-	grid-template-columns: 2fr 1fr 1fr 1fr auto;
+	grid-template-columns: 2fr 1fr 1fr auto auto;
 	gap: 12px;
 	align-items: start;
 }
@@ -180,6 +180,7 @@
 	color: #ffffff;
 	font-weight: 600;
 	cursor: pointer;
+	white-space: nowrap;
 	transition:
 		background 0.15s ease,
 		opacity 0.15s ease;
@@ -218,6 +219,24 @@
 	color: #dc2626;
 }
 
+.emptyState {
+	padding: 48px 24px;
+	text-align: center;
+}
+
+.emptyTitle {
+	margin: 0 0 8px;
+	font-size: 18px;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.emptyText {
+	margin: 0;
+	font-size: 14px;
+	color: #64748b;
+}
+
 @media (max-width: 1024px) {
 	.addProductCard form {
 		grid-template-columns: 1fr 1fr;
@@ -225,6 +244,10 @@
 
 	.addProductCard button {
 		width: 100%;
+	}
+
+	.addProductCard button:last-child {
+		grid-column: 1 / -1;
 	}
 
 	.toolbar {
@@ -246,24 +269,6 @@
 	.table {
 		min-width: 760px;
 	}
-}
-
-.emptyState {
-	padding: 48px 24px;
-	text-align: center;
-}
-
-.emptyTitle {
-	margin: 0 0 8px;
-	font-size: 18px;
-	font-weight: 600;
-	color: #0f172a;
-}
-
-.emptyText {
-	margin: 0;
-	font-size: 14px;
-	color: #64748b;
 }
 
 @media (max-width: 640px) {

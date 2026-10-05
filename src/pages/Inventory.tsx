@@ -245,16 +245,18 @@ const Inventory = () => {
 
 										<td>
 											<span
-												className={`${styles.status} ${currentAvailable <
-													10
-													? styles.lowStock
-													: styles.inStock
+												className={`${styles.status} ${currentAvailable === 0
+														? styles.outOfStock
+														: currentAvailable < 10
+															? styles.lowStock
+															: styles.inStock
 													}`}
 											>
-												{currentAvailable <
-													10
-													? "Low Stock"
-													: "In Stock"}
+												{currentAvailable === 0
+													? "Out of Stock"
+													: currentAvailable < 10
+														? "Low Stock"
+														: "In Stock"}
 											</span>
 										</td>
 

@@ -4,6 +4,7 @@ import { InventoryItemModel } from "../models/Inventory"
 import { ProductModel } from "../models/Product"
 
 import { inventoryUpdateSchema } from "../validation/inventory"
+import { getProductStatus } from "../utils/getProductStatus"
 
 const router = Router()
 
@@ -68,6 +69,7 @@ router.patch("/:id", async (req, res, next) => {
 		await inventory.save()
 
 		product.stock = inventory.stock
+		product.status = getProductStatus(inventory.stock)
 
 		await product.save()
 

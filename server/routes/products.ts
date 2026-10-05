@@ -9,6 +9,8 @@ import {
 	productUpdateSchema
 } from "../validation/product"
 
+import { getProductStatus } from "../utils/getProductStatus"
+
 const router = Router()
 
 const createSku = (
@@ -63,10 +65,14 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
 	try {
-		const validateData = productCreateSchema.parse(req.body)
+		const validateData =
+			productCreateSchema.parse(req.body)
 
 		const product = await ProductModel.create({
 			...validateData,
+			status: getProductStatus(
+				validateData.stock
+			),
 			userId: req.userId
 		})
 
@@ -114,10 +120,11 @@ router.patch("/:id", async (req, res, next) => {
 			})
 		}
 
-		const inventory = await InventoryItemModel.findOne({
-			productId: product._id,
-			userId: req.userId
-		})
+		const inventory =
+			await InventoryItemModel.findOne({
+				productId: product._id,
+				userId: req.userId
+			})
 
 		if (!inventory) {
 			return res.status(409).json({
@@ -136,15 +143,24 @@ router.patch("/:id", async (req, res, next) => {
 			})
 		}
 
+		const updateData = {
+			...validateData,
+			...(validateData.stock !== undefined && {
+				status: getProductStatus(
+					validateData.stock
+				)
+			})
+		}
+
 		const updatedProduct =
 			await ProductModel.findOneAndUpdate(
 				{
 					_id: product._id,
 					userId: req.userId
 				},
-				validateData,
+				updateData,
 				{
-					new: true,
+					returnDocument: "after",
 					runValidators: true
 				}
 			)
@@ -179,12 +195,16 @@ router.delete("/:id", async (req, res, next) => {
 			})
 		}
 
-		const inventory = await InventoryItemModel.findOne({
-			productId: product._id,
-			userId: req.userId
-		})
+		const inventory =
+			await InventoryItemModel.findOne({
+				productId: product._id,
+				userId: req.userId
+			})
 
-		if (inventory && inventory.reserved > 0) {
+		if (
+			inventory &&
+			inventory.reserved > 0
+		) {
 			return res.status(400).json({
 				message:
 					"Cannot delete a product with reserved stock"

@@ -193,6 +193,11 @@
 	color: #64748b;
 }
 
+.outOfStock {
+	color: #dc2626;
+	background: #fee2e2;
+}
+
 @media (max-width: 640px) {
 	.toolbar {
 		flex-direction: column;

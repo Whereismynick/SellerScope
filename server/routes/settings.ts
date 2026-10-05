@@ -39,7 +39,7 @@ router.patch("/", async (req, res, next) => {
 				req.userId,
 				validateData,
 				{
-					new: true,
+					returnDocument: "after",
 					runValidators: true
 				}
 			)

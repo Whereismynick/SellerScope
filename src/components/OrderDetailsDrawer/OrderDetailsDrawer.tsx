@@ -73,13 +73,20 @@ const OrderDetailsDrawer = ({
 						<select
 							value={order.status}
 							onChange={e =>
-								onStatusChange(e.target.value as OrderStatus)
+								onStatusChange(
+									e.target.value as OrderStatus
+								)
 							}
-							disabled={isUpdating}
+							disabled={
+								isUpdating ||
+								order.status !== "Pending"
+							}
 						>
 							<option value="Paid">Paid</option>
 							<option value="Pending">Pending</option>
-							<option value="Cancelled">Cancelled</option>
+							<option value="Cancelled">
+								Cancelled
+							</option>
 						</select>
 					</div>
 				</div>
