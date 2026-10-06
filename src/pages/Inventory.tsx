@@ -85,7 +85,10 @@ const Inventory = () => {
 
 	const handleSave = () => {
 		if (!editingItem) return
-
+		if (!Number.isInteger(stock)) {
+			setEditError("Stock must be an integer")
+			return
+		}
 		if (stock < 0) {
 			setEditError("Stock cannot be negative")
 			return
@@ -217,6 +220,7 @@ const Inventory = () => {
 													type="number"
 													value={stock === 0 ? "" : stock}
 													min={0}
+													step="1"
 													onChange={e => {
 														const value = e.target.value
 
@@ -246,10 +250,10 @@ const Inventory = () => {
 										<td>
 											<span
 												className={`${styles.status} ${currentAvailable === 0
-														? styles.outOfStock
-														: currentAvailable < 10
-															? styles.lowStock
-															: styles.inStock
+													? styles.outOfStock
+													: currentAvailable < 10
+														? styles.lowStock
+														: styles.inStock
 													}`}
 											>
 												{currentAvailable === 0

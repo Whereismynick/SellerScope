@@ -4,10 +4,13 @@ export type ProductStatus =
 	| "Out of Stock"
 
 export const getProductStatus = (
-	stock: number
+	stock: number,
+	reserved = 0
 ): ProductStatus => {
-	if (stock === 0) return "Out of Stock"
-	if (stock < 10) return "Low Stock"
+	const available = stock - reserved
+
+	if (available <= 0) return "Out of Stock"
+	if (available < 10) return "Low Stock"
 
 	return "Active"
 }

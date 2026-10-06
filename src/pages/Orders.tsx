@@ -40,7 +40,6 @@ const fetchOrders = async (): Promise<Order[]> => {
 
 type CreateOrderData = {
 	customer: string
-	status: OrderStatus
 	items: {
 		productId: string
 		quantity: number
@@ -131,6 +130,9 @@ const Orders = () => {
 		mutationFn: updateOrderStatus,
 		onSuccess: updatedOrder => {
 			queryClient.invalidateQueries({ queryKey: ["orders"] })
+			queryClient.invalidateQueries({ queryKey: ["inventory"] })
+			queryClient.invalidateQueries({ queryKey: ["products"] })
+
 			setSelectedOrder(updatedOrder)
 		}
 	})
@@ -139,6 +141,8 @@ const Orders = () => {
 		mutationFn: createOrder,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["orders"] })
+			queryClient.invalidateQueries({ queryKey: ["inventory"] })
+			queryClient.invalidateQueries({ queryKey: ["products"] })
 
 			setCustomer("")
 			setSelectedProductId("")
@@ -190,7 +194,6 @@ const Orders = () => {
 
 		const newOrder = {
 			customer: customer.trim(),
-			status: "Pending" as OrderStatus,
 			items: orderItems.map(item => ({
 				productId: item.productId,
 				quantity: item.quantity
@@ -207,6 +210,12 @@ const Orders = () => {
 		if (!selectedProduct) return
 		if (!selectedInventory) return
 		if (quantity < 1) return
+		if (!Number.isInteger(quantity)) {
+			setAddItemError(
+				"Quantity must be an integer"
+			)
+			return
+		}
 
 		if (quantity > available) {
 			setAddItemError(
@@ -249,14 +258,14 @@ const Orders = () => {
 	}
 
 	const handleRemoveItem = (productId: string) => {
-	clearCreateOrderError()
-	setAddItemError("")
-	setOrderItems(prevItems =>
-		prevItems.filter(
-			item => item.productId !== productId
+		clearCreateOrderError()
+		setAddItemError("")
+		setOrderItems(prevItems =>
+			prevItems.filter(
+				item => item.productId !== productId
+			)
 		)
-	)
-}
+	}
 
 	return (
 		<div className={styles.page}>

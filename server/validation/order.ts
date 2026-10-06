@@ -2,7 +2,10 @@ import { z } from "zod"
 
 const orderItemSchema = z.object({
 	productId: z.string().trim().min(1, "Product id is required"),
-	quantity: z.number().min(1, "Quantity must be at least 1")
+	quantity: z
+		.number()
+		.int("Quantity must be an integer")
+		.min(1, "Quantity must be at least 1")
 
 })
 
@@ -11,12 +14,6 @@ export const orderCreateSchema = z.object({
 		.string()
 		.trim()
 		.min(1, "Customer is required"),
-
-	status: z.enum([
-		"Paid",
-		"Pending",
-		"Cancelled"
-	]),
 
 	items: z
 		.array(orderItemSchema)

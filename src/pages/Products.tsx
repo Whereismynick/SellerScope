@@ -16,8 +16,16 @@ import { formatCurrency } from "../utils/formatCurrency"
 
 const productSchema = z.object({
 	name: z.string().trim().min(1, "Product name is required"),
-	price: z.number().min(1, "Price must be greater than 0"),
-	stock: z.number().min(0, "Stock cannot be negative")
+
+	price: z
+		.number()
+		.positive("Price must be greater than 0")
+		.multipleOf(0.01, "Price can have at most 2 decimal places"),
+
+	stock: z
+		.number()
+		.int("Stock must be an integer")
+		.min(0, "Stock cannot be negative")
 })
 
 type ProductForm = z.infer<typeof productSchema>
@@ -185,6 +193,8 @@ const Products = () => {
 					<div className={styles.formField}>
 						<input
 							type="number"
+							min="0.01"
+							step="0.01"
 							placeholder="Price"
 							{...register("price", { valueAsNumber: true })}
 						/>
@@ -195,6 +205,7 @@ const Products = () => {
 					<div className={styles.formField}>
 						<input
 							type="number"
+							step="1"
 							placeholder="Stock"
 							{...register("stock", { valueAsNumber: true })}
 						/>

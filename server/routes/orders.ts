@@ -89,35 +89,27 @@ router.post("/", async (req, res, next) => {
 		)
 
 		for (const item of inventories) {
-			if (validateData.status === "Pending") {
-				item.inventory.reserved +=
-					item.quantity
-			}
-
-			if (validateData.status === "Paid") {
-				item.inventory.stock -=
-					item.quantity
-			}
+			item.inventory.reserved +=
+				item.quantity
 
 			await item.inventory.save()
 
-			if (validateData.status === "Paid") {
-				await ProductModel.findOneAndUpdate(
-					{
-						_id: item.inventory.productId,
-						userId: req.userId
-					},
-					{
-						stock: item.inventory.stock,
-						status: getProductStatus(
-							item.inventory.stock
-						)
-					},
-					{
-						runValidators: true
-					}
-				)
-			}
+			await ProductModel.findOneAndUpdate(
+				{
+					_id: item.inventory.productId,
+					userId: req.userId
+				},
+				{
+					stock: item.inventory.stock,
+					status: getProductStatus(
+						item.inventory.stock,
+						item.inventory.reserved
+					)
+				},
+				{
+					runValidators: true
+				}
+			)
 		}
 
 		const lastOrder = await OrderModel
@@ -134,7 +126,7 @@ router.post("/", async (req, res, next) => {
 
 		const order = await OrderModel.create({
 			customer: validateData.customer,
-			status: validateData.status,
+			status: "Pending",
 			items: orderItems,
 			amount,
 			date: new Date().toISOString(),
@@ -206,7 +198,7 @@ router.patch("/:id", async (req, res, next) => {
 			if (
 				newStatus === "Paid" &&
 				inventory.stock <
-					item.quantity
+				item.quantity
 			) {
 				return res.status(400).json({
 					message:
@@ -236,23 +228,22 @@ router.patch("/:id", async (req, res, next) => {
 
 			await item.inventory.save()
 
-			if (newStatus === "Paid") {
-				await ProductModel.findOneAndUpdate(
-					{
-						_id: item.inventory.productId,
-						userId: req.userId
-					},
-					{
-						stock: item.inventory.stock,
-						status: getProductStatus(
-							item.inventory.stock
-						)
-					},
-					{
-						runValidators: true
-					}
-				)
-			}
+			await ProductModel.findOneAndUpdate(
+				{
+					_id: item.inventory.productId,
+					userId: req.userId
+				},
+				{
+					stock: item.inventory.stock,
+					status: getProductStatus(
+						item.inventory.stock,
+						item.inventory.reserved
+					)
+				},
+				{
+					runValidators: true
+				}
+			)
 		}
 
 		order.status = newStatus

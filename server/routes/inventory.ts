@@ -69,7 +69,10 @@ router.patch("/:id", async (req, res, next) => {
 		await inventory.save()
 
 		product.stock = inventory.stock
-		product.status = getProductStatus(inventory.stock)
+		product.status = getProductStatus(
+			inventory.stock,
+			inventory.reserved
+		)
 
 		await product.save()
 

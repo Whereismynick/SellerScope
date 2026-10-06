@@ -147,7 +147,8 @@ router.patch("/:id", async (req, res, next) => {
 			...validateData,
 			...(validateData.stock !== undefined && {
 				status: getProductStatus(
-					validateData.stock
+					validateData.stock,
+					inventory.reserved
 				)
 			})
 		}
