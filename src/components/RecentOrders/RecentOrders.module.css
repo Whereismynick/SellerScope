@@ -7,25 +7,26 @@
 }
 
 .paid {
-  color: #15803d;
-  background: #dcfce7;
+	color: #15803d;
+	background: #dcfce7;
 }
 
 .pending {
-  color: #a16207;
-  background: #fef3c7;
+	color: #a16207;
+	background: #fef3c7;
 }
 
 .cancelled {
-  color: #b91c1c;
-  background: #fee2e2;
+	color: #b91c1c;
+	background: #fee2e2;
 }
 
 .card {
-  background: white;
+	background: white;
 	border: 1px solid #e2e8f0;
 	border-radius: 12px;
 	padding: 20px;
+	overflow-x: auto;
 }
 
 .title {
@@ -42,7 +43,7 @@
 }
 
 .table th {
-  color: #64748b;
+	color: #64748b;
 	text-align: left;
 	font-size: 12px;
 	padding: 12px 20px;

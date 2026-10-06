@@ -37,7 +37,7 @@ const Analytics = () => {
         <StatCard
           title="Average Order Value"
           value={formatCurrency(
-            Math.round(averageOrderValue),
+            averageOrderValue,
             currency
           )}
         />

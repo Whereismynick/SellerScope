@@ -111,6 +111,22 @@
 	background: #4f46e5;
 }
 
+@media (max-width: 1024px) {
+	.orderForm {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.orderAmount {
+		display: flex;
+		align-items: center;
+	}
+
+	.createOrderButton {
+		width: 100%;
+		justify-self: stretch;
+	}
+}
+
 @media (max-width: 640px) {
 	.orderForm {
 		grid-template-columns: 1fr;
