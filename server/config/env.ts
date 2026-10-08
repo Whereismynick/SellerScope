@@ -13,3 +13,4 @@ const getRequiredEnv = (name: string): string => {
 export const MONGODB_URI = getRequiredEnv("MONGODB_URI")
 export const JWT_SECRET = getRequiredEnv("JWT_SECRET")
 export const PORT = Number(process.env.PORT) || 3001
+export const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173"
