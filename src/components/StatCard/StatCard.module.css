@@ -35,3 +35,18 @@
 .neutral {
 	color: #64748b;
 }
+
+@media (max-width: 640px) {
+	.statcard {
+		padding: 14px;
+	}
+
+	.title {
+		font-size: 14px;
+	}
+
+	.value {
+		font-size: 20px;
+		margin-bottom: 4px;
+	}
+}

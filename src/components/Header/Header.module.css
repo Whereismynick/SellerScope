@@ -59,25 +59,44 @@
 
 @media (max-width: 640px) {
 	.header {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
 		height: auto;
-		padding: 16px;
-		gap: 12px;
-		align-items: flex-start;
+		padding: 12px 8px;
+		margin-bottom: 16px;
+		gap: 6px;
+		align-items: center;
 	}
 
 	.title {
-		font-size: 20px;
+		min-width: 0;
+		font-size: 18px;
 	}
 
 	.userBlock {
-		gap: 8px;
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 4px;
 	}
 
 	.user {
 		display: none;
 	}
 
+	.avatar {
+		width: 30px;
+		height: 30px;
+		flex-shrink: 0;
+		font-size: 13px;
+	}
+
 	.logoutButton {
 		margin-left: 0;
+		padding: 4px 6px;
+		font-size: 12px;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 }

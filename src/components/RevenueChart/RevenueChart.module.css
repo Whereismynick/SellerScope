@@ -12,3 +12,15 @@
 	font-weight: 700;
 	color: #0f172a;
 }
+
+@media (max-width: 640px) {
+	.chartCard {
+		margin-top: 16px;
+		padding: 16px 12px;
+	}
+
+	.title {
+		margin-bottom: 12px;
+		font-size: 17px;
+	}
+}

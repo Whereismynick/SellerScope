@@ -57,3 +57,34 @@
 		padding: 10px 12px;
 	}
 }
+
+@media (max-width: 640px) {
+	.sidebar {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		padding: 12px 8px;
+	}
+
+	.logo {
+		padding: 0 4px 10px;
+		font-size: 20px;
+	}
+
+	.nav {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		gap: 6px 2px;
+	}
+
+	.navLink {
+		min-width: 0;
+		padding: 8px 0;
+		font-size: 12px;
+		text-align: center;
+		white-space: nowrap;
+	}
+}
